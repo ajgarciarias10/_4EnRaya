@@ -42,16 +42,22 @@ public class GreedyPlayer extends Player {
             // Buscamos en todo el tablero
             for (int j = 0; j < tablero.getColumnas(); j++) {
                 if (tablero.get(i,j) != Main.VACIO) {
+                    //Revisa de manera horizontal
                     if (tablero.get(i,j) == Main.PLAYER2) {
                         ganarHorz++;
                     } else {
                         ganarHorz = 0;
                     }
+                    //3 == 3 "(4-1)"
                     if (ganarHorz == conecta - 1) {
+                        //Asignamos la columna en donde estemos
                         posicion = j;
+                        //Si la posicion no es la misma que la del tablero
                         if (posicion != tablero.getColumnas() - 1) {
+                            //Si la columna no esta completa aumenta la posicion
                             if (!tablero.fullColumn(j + 1)) {
                                 posicion++;
+                            //En caso de que j sea  mayor  que 3 y  la columna no este completa resta la posicion -3
                             } else if (j >= conecta - 1 && !tablero.fullColumn(j - (conecta - 1)))
                                 posicion = posicion - (conecta - 1);
                         }
@@ -62,16 +68,23 @@ public class GreedyPlayer extends Player {
         }
         // Defenderse en Horizontal hacia la izquierda
         ganarHorz = 0;
+
         for (int j = tablero.getColumnas() - 1; j >= 0; j--) {
+             //Si no esta la columna completa
             if (!tablero.fullColumn(j)) {
+                //Si el tablero en su columnas no contiene ninguna ficha del jugador 2 pues gana en la horizontal
                 if (tablero.topColumn(j) != Main.PLAYER2) {
                     ganarHorz++;
                 } else {
                     ganarHorz = 0;
                 }
+                //Si el ganarHorizontal es igual a 3
                 if (ganarHorz == conecta - 1 && j != 0) {
+                    //Posicion igual a 3
                     posicion = j;
+                    //Si las columnas no estan completas en j-1 3-1
                     if (!tablero.fullColumn(j - 1)) {
+                        //Restas posicion y cubres la izquierda
                         posicion--;
                         cubrir_izquierda = true;
                     }

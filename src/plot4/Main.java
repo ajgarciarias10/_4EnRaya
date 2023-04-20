@@ -49,12 +49,12 @@ public class Main extends JFrame implements ActionListener {
 
     // Parámetros
     // Número de filas
-    private static final int FILAS = 6;
+    private static final int FILAS = 4;
     // Número de columnas
-    private static final int COLUMNAS = 7;
+    private static final int COLUMNAS = 4;
     // Número de fichas que han de alinearse para ganar
     private static final int CONECTA = 4;
-
+    
     // Grid de juego
     private JButton[][] tableroGUI; // Tablero gráfico
     private Grid juego; // Tablero interno
@@ -182,12 +182,6 @@ public class Main extends JFrame implements ActionListener {
 
         // Actualizar tablero tras cada movimiento
         updateGrid();
-        // Comprobamos si llegamos al final del juego
-        if (movimiento >= FILAS * COLUMNAS) {
-            // Empate!!!
-            JOptionPane.showMessageDialog(this, "¡Empate!", "Conecta4", JOptionPane.INFORMATION_MESSAGE);
-            reset();
-        }
         // Mostrar mensaje si hay ganador
         switch (ganador) {
             case PLAYER1:
@@ -199,6 +193,14 @@ public class Main extends JFrame implements ActionListener {
                 System.out.println("Ganador: Jugador 2, en " + movimiento + " movimientos.");
                 JOptionPane.showMessageDialog(this, "Ganador, Jugador 2\nen " + movimiento + " movimientos!", "Conecta-4", JOptionPane.INFORMATION_MESSAGE, ficha2);
                 reset();
+                break;
+            default:
+                // Comprobamos si llegamos al final del juego
+                if (movimiento >= FILAS * COLUMNAS) {
+                    // Empate!!!
+                    JOptionPane.showMessageDialog(this, "¡Empate!", "Conecta4", JOptionPane.INFORMATION_MESSAGE);
+                    reset();
+                }
                 break;
         }
 
