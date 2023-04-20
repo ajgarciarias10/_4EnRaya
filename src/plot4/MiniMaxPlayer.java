@@ -6,13 +6,11 @@
 package plot4;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Stack;
 
 /**
  *
  * @author José María Serrano
- * @version 1.7 Departamento de Informática. Universidad de Jáen 
+ * @version 1.7 Departamento de Informática. Universidad de Jáen
  * Última revisión: 2023-03-30
  *
  * Inteligencia Artificial. 2º Curso. Grado en Ingeniería Informática
@@ -25,16 +23,6 @@ import java.util.Stack;
  */
 public class MiniMaxPlayer extends Player {
 
-    HashMap<Grid, Integer> celdaValorPlayer = new HashMap<>();
-    Stack<Grid> piladeTableros = new Stack<>();
-
-    ArrayList<Grid> ramademapas = new ArrayList<>();
-
-    ArrayList<ArrayList> arbol = new ArrayList<>();
-
-    HashMap<ArrayList,Integer> arbolMinMax = new HashMap<>();
-
-
     /**
      * @brief funcion que determina donde colocar la ficha este turno
      * @param tablero Tablero de juego
@@ -45,130 +33,159 @@ public class MiniMaxPlayer extends Player {
     @Override
     public int turno(Grid tablero, int conecta) {
 
-        //Echa primero siempre el jugador1 (Min)
+        Nodo nodoPadre = new Nodo(tablero);
+        Minimax(nodoPadre,-1);
 
+        ArrayList<Nodo> hijos = nodoPadre.getHijos();
+        Nodo movimiento = null;
+        for (int i = 0; i < hijos.size(); i++) {
+            if(nodoPadre.getValor() == hijos.get(i).getValor()){
+                movimiento = hijos.get(i);
+            }
+        }
+        int posicion = encontrarMovimiento(nodoPadre.getTablero().getGrid(), movimiento.getTablero().getGrid());
 
-        //Creacion del arbol min max
-        crearArbol(tablero);
-
-
-
-        return 1;
-
-
-
-        // return posicion;
+        return posicion;
 
     } // turno
+    public static int encontrarMovimiento(int[][] tablero1, int[][] tablero2) {
+        int filas = tablero1.length;
+        int columnas = tablero1[0].length;
 
-    private void crearArbol(Grid tablero) {
-
-        int jugador = 1;
-        ArrayList<Grid> casillasDisponibles;
-        //Inicio
-        if(celdaValorPlayer.isEmpty()){
-            celdaValorPlayer.put(tablero,jugador);
-        }else{
-            if(celdaValorPlayer.get(tablero) == -1){
-                jugador = 1;
-            }else{
-                jugador= -1;
-            }
-        }
-        //Metodo que compruebe las casillas disponibles
-        // Para jugador 1 en caso Min
-       // Y para jugador2 caso MAX
-        //Comprobamos donde podemos colocar la ficha:
-        casillasDisponibles = getPosiblesCasillas(jugador,tablero);
-        for (int i = 0; i < casillasDisponibles.size(); i++) {
-            /*
-                Un hashmap  en el que la clave
-                sera el nuevotablero y el valor de si es min o max(jugador2)
-             */
-            celdaValorPlayer.put(tablero,jugador);
-            /*
-            y ademas  en una estructura que sea de tipo pila para asi
-             tener almacenados todos los hijos los tableros
-            */
-            piladeTableros.push(tablero);
-        }
-        //Ahora sacamos de la pila, 1 de los tableros
-        Grid  tableroapasar =  piladeTableros.pop();
-        ramademapas.add(tableroapasar);
-        //si el mapa del tablero esta lleno
-        if (isFull(tableroapasar)){
-            //si la pila esta vacia
-            if(piladeTableros.isEmpty()){
-                MinMAX();
-                //caso de que no
-            }else{
-                //si tableroapasarcheckwin() =  1 | -1  y el tablero esta lleno
-                if(tableroapasar.checkWin() == 1 | tableroapasar.checkWin() == -1){
-                    arbol.add(ramademapas);
-                    ramademapas.clear();
-                    crearArbol(tableroapasar);
-               //si tableroapasarcheckwin() =  igual a 0 empate
-                }else{
-                    arbol.add(ramademapas);
-                    ramademapas.clear();
-                    crearArbol(tableroapasar);
-                }
-
-            }
-        }else{
-            if(tableroapasar.checkWin() == 1 ) {
-                arbolMinMax.put(ramademapas,1);
-                ramademapas.clear();
-                crearArbol(piladeTableros.pop());
-            }else if(tableroapasar.checkWin() == -1){
-                arbolMinMax.put(ramademapas,-1);
-                ramademapas.clear();
-                crearArbol(piladeTableros.pop());
-            }
-            else if(tableroapasar.checkWin() == 0){
-                crearArbol(tableroapasar);
-            }
-        }
-
-
-
-
-    }
-
-    private void MinMAX() {
-    }
-    public boolean isFull(Grid tablero) {
-        for (int i = 0; i < tablero.getFilas(); i++) {
-            for (int j = 0; j < tablero.getColumnas(); j++) {
-                if (tablero.get(i, j) == Main.VACIO) {
-                    return false;
+        for (int i = 0; i < filas; i++) {
+            for (int j = 0; j < columnas; j++) {
+                if (tablero1[i][j] != tablero2[i][j]) {
+                    return j; // devolver posición de la celda diferente
                 }
             }
         }
-        return true;
+
+        return 0; // si no hay celdas diferentes, devolver null
     }
 
-    public ArrayList<Grid> getPosiblesCasillas(int jugador, Grid tablero) {
-        ArrayList<Grid> posiblesCasillas = new ArrayList<>();
-        int ficha = jugador; // o simplemente int ficha = jugador;
-        for (int j = 0; j < tablero.getColumnas(); j++) {
-            for (int i = tablero.getFilas() - 1; i >= 0; i--) {
-                if (tablero.get(i, j) == Main.VACIO) {
-                    Grid nuevoGrid = new Grid(tablero);
-                    nuevoGrid.set(j, ficha);
-                    posiblesCasillas.add(nuevoGrid);
-                    break;
+
+    public static void copiaTablero(Grid tablero, int[][] tablero2) {
+        int[][] tablero1 = tablero.getGrid();
+        int filas = tablero1.length;
+        int columnas = tablero1[0].length;
+
+        for (int j = 0; j < columnas; j++) {
+            for (int i = filas-1; i == 0; i++) {
+                if (tablero1[i][j] != tablero2[i][j]) {
+                    tablero.set(j,tablero2[i][j]);
                 }
             }
         }
-        return posiblesCasillas;
     }
 
 
+    public void Minimax(Nodo nodo, int jugador) {
+        // Obtener el tablero del nodo actual
+        Grid tablero = nodo.getTablero();
+
+        // Comprobar si el juego ha terminado en este estado
+       /* int winner = tablero.checkWin();
+        if (winner != 0) {
+            // Asignar un valor de utilidad en función del resultado del juego
+            nodo.setValor(winner == 1 ? 1 : -1);
+        }*/
+
+        if (jugador == -1) {
+            for (int col = 0; col < 3; col++) {
+                // Comprobar si la columna está llena
+                if (tablero.fullColumn(col)) {
+                    continue;
+                }
+                Grid tableroHijo = new Grid(tablero);
+                tableroHijo.set(col,jugador);
+                Nodo nodoHijo = new Nodo(tableroHijo);
+                nodo.addHijos(nodoHijo);
+                Minimax(nodoHijo, 1);
+            }
+        } else {
+            for (int col = 0; col < 3; col++) {
+                // Comprobar si la columna está llena
+                if (tablero.fullColumn(col)) {
+                    continue;
+                }
+                Grid tableroHijo = new Grid(tablero);
+                tableroHijo.set(col,jugador);
+                Nodo nodoHijo = new Nodo(tableroHijo);
+                nodo.addHijos(nodoHijo);
+                Minimax(nodoHijo, -1);
+            }
+        }
+        /*    nodo.valorMinimax = valorMinimo;
+        // Generar todos los nodos hijos
+        for (int col = 0; col < 4; col++) {
+            // Comprobar si la columna está llena
+            if (tablero.fullColumn(col)) {
+                continue;
+            }
+
+            // Realizar la jugada en la columna correspondiente
+
+            Grid tableroHijo = new Grid(4,4,4);
+            copiaTablero(tableroHijo,tablero.getGrid());
+            tableroHijo.set(col,jugador);
+            Nodo nodoHijo = new Nodo(tableroHijo);
+            nodo.addHijos(nodoHijo);
+            Minimax(nodoHijo, jugador == 1 ? -1 : 1);
+        }
+
+        // Asignar el valor de utilidad del hijo al padre
+        /*if (jugador == 1 && nodoHijo.getValor() > nodo.getValor()) {
+            nodo.setValor(nodoHijo.getValor());
+        } else if (jugador == -1 && nodoHijo.getValor() < nodo.getValor()) {
+            nodo.setValor(nodoHijo.getValor());
+        }*/
+    }
+
+    public class Nodo {
+        private Grid tablero;
+        private int valor;
+        private ArrayList<Nodo> hijos;
+
+        public Nodo(Grid tablero) {
+            this.tablero = tablero;
+            this.valor = 0;
+            this.hijos = new ArrayList<Nodo>();
+        }
+
+        public Nodo(Grid tablero, int valor, ArrayList<Nodo> hijos) {
+            this.tablero = tablero;
+            this.valor = valor;
+            this.hijos = new ArrayList<Nodo>();
+        }
+
+        public Grid getTablero() {
+            return tablero;
+        }
+
+        public int getValor() {
+            return valor;
+        }
+
+        public ArrayList<Nodo> getHijos() {
+            return hijos;
+        }
+
+        public void setTablero(Grid tablero) {
+            this.tablero = tablero;
+        }
+
+        public void setValor(int valor) {
+            this.valor = valor;
+        }
+
+        public void setHijos(ArrayList<Nodo> hijos) {
+            this.hijos = hijos;
+        }
+
+        public void addHijos(Nodo hijo){
+            this.hijos.add(hijo);
+        }
+    }
 
 
-
-
-
-}
-
+} // MiniMaxPlayer
