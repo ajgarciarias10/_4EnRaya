@@ -32,22 +32,68 @@ public class MiniMaxPlayer extends Player {
      */
     @Override
     public int turno(Grid tablero, int conecta) {
-
+        //Metemos el primer tablero como nodo padre
         Nodo nodoPadre = new Nodo(tablero);
+
         Minimax(nodoPadre,-1);
 
+        evaluar(nodoPadre,true);
+
         ArrayList<Nodo> hijos = nodoPadre.getHijos();
+
         Nodo movimiento = null;
+
         for (int i = 0; i < hijos.size(); i++) {
             if(nodoPadre.getValor() == hijos.get(i).getValor()){
                 movimiento = hijos.get(i);
             }
         }
+
         int posicion = encontrarMovimiento(nodoPadre.getTablero().getGrid(), movimiento.getTablero().getGrid());
 
         return posicion;
 
     } // turno
+
+    public void Minimax(Nodo nodo, int jugador) {
+        // Obtener el tablero del nodo actual
+        Grid tablero = nodo.getTablero();
+
+        // Comprobar si el juego ha terminado en este estado
+        int winner = tablero.checkWin();
+        if (winner != 0) {
+            // Asignar un valor de utilidad en función del resultado del juego
+            nodo.setValor(winner == 1 ? 1 : -1);
+            return;
+        }
+
+
+        if (jugador == -1) {
+            for (int col = 0; col < 4; col++) {
+                // Comprobar si la columna está llena
+                if (tablero.fullColumn(col)) {
+                    continue;
+                }
+                Grid tableroHijo = new Grid(tablero);
+                tableroHijo.set(col,jugador);
+                Nodo nodoHijo = new Nodo(tableroHijo);
+                nodo.addHijos(nodoHijo);
+                Minimax(nodoHijo, 1);
+            }
+        } else {
+            for (int col = 0; col < 4; col++) {
+                // Comprobar si la columna está llena
+                if (tablero.fullColumn(col)) {
+                    continue;
+                }
+                Grid tableroHijo = new Grid(tablero);
+                tableroHijo.set(col,jugador);
+                Nodo nodoHijo = new Nodo(tableroHijo);
+                nodo.addHijos(nodoHijo);
+                Minimax(nodoHijo, -1);
+            }
+        }
+    }
     public static int encontrarMovimiento(int[][] tablero1, int[][] tablero2) {
         int filas = tablero1.length;
         int columnas = tablero1[0].length;
@@ -64,81 +110,38 @@ public class MiniMaxPlayer extends Player {
     }
 
 
-    public static void copiaTablero(Grid tablero, int[][] tablero2) {
-        int[][] tablero1 = tablero.getGrid();
-        int filas = tablero1.length;
-        int columnas = tablero1[0].length;
-
-        for (int j = 0; j < columnas; j++) {
-            for (int i = filas-1; i == 0; i++) {
-                if (tablero1[i][j] != tablero2[i][j]) {
-                    tablero.set(j,tablero2[i][j]);
-                }
-            }
-        }
-    }
-
-
-    public void Minimax(Nodo nodo, int jugador) {
-        // Obtener el tablero del nodo actual
-        Grid tablero = nodo.getTablero();
-
-        // Comprobar si el juego ha terminado en este estado
-       /* int winner = tablero.checkWin();
-        if (winner != 0) {
-            // Asignar un valor de utilidad en función del resultado del juego
-            nodo.setValor(winner == 1 ? 1 : -1);
-        }*/
-
-        if (jugador == -1) {
-            for (int col = 0; col < 3; col++) {
-                // Comprobar si la columna está llena
-                if (tablero.fullColumn(col)) {
-                    continue;
-                }
-                Grid tableroHijo = new Grid(tablero);
-                tableroHijo.set(col,jugador);
-                Nodo nodoHijo = new Nodo(tableroHijo);
-                nodo.addHijos(nodoHijo);
-                Minimax(nodoHijo, 1);
-            }
-        } else {
-            for (int col = 0; col < 3; col++) {
-                // Comprobar si la columna está llena
-                if (tablero.fullColumn(col)) {
-                    continue;
-                }
-                Grid tableroHijo = new Grid(tablero);
-                tableroHijo.set(col,jugador);
-                Nodo nodoHijo = new Nodo(tableroHijo);
-                nodo.addHijos(nodoHijo);
-                Minimax(nodoHijo, -1);
-            }
-        }
-        /*    nodo.valorMinimax = valorMinimo;
-        // Generar todos los nodos hijos
-        for (int col = 0; col < 4; col++) {
-            // Comprobar si la columna está llena
-            if (tablero.fullColumn(col)) {
-                continue;
-            }
-
-            // Realizar la jugada en la columna correspondiente
-
-            Grid tableroHijo = new Grid(4,4,4);
-            copiaTablero(tableroHijo,tablero.getGrid());
-            tableroHijo.set(col,jugador);
-            Nodo nodoHijo = new Nodo(tableroHijo);
-            nodo.addHijos(nodoHijo);
-            Minimax(nodoHijo, jugador == 1 ? -1 : 1);
+    public int evaluar(Nodo nodo, boolean Max) {
+        // Si el nodo es una hoja, retornar su valor de utilidad
+        if (nodo.getHijos().size() == 0) {
+            return nodo.getValor();
         }
 
-        // Asignar el valor de utilidad del hijo al padre
-        /*if (jugador == 1 && nodoHijo.getValor() > nodo.getValor()) {
-            nodo.setValor(nodoHijo.getValor());
-        } else if (jugador == -1 && nodoHijo.getValor() < nodo.getValor()) {
-            nodo.setValor(nodoHijo.getValor());
-        }*/
+        // Si el nivel actual es un nivel de maximización
+        if (Max) {
+            int mejorValor = Integer.MAX_VALUE;
+
+            // Recorrer los nodos hijos del nodo actual
+            for (Nodo hijo : nodo.getHijos()) {
+                int valorHijo = evaluar(hijo, true);
+                mejorValor = Math.max(mejorValor, valorHijo);
+            }
+
+            // Asignar el mejor valor obtenido a este nodo
+            nodo.setValor(mejorValor);
+            return mejorValor;
+        } else { // Si el nivel actual es un nivel de minimización
+            int mejorValor = Integer.MIN_VALUE;
+
+            // Recorrer los nodos hijos del nodo actual
+            for (Nodo hijo : nodo.getHijos()) {
+                int valorHijo = evaluar(hijo, false);
+                mejorValor = Math.min(mejorValor, valorHijo);
+            }
+
+            // Asignar el mejor valor obtenido a este nodo
+            nodo.setValor(mejorValor);
+            return mejorValor;
+        }
     }
 
     public class Nodo {
@@ -188,4 +191,4 @@ public class MiniMaxPlayer extends Player {
     }
 
 
-} // MiniMaxPlayer
+} // MiniMaxPlayer
