@@ -49,9 +49,9 @@ public class Main extends JFrame implements ActionListener {
 
     // Parámetros
     // Número de filas
-    public static final int FILAS = 4;
+    public static final int FILAS = 3;
     // Número de columnas
-    public static final int COLUMNAS = 4;
+    public static final int COLUMNAS = 3;
     // Número de fichas que han de alinearse para ganar
     public static final int CONECTA = 3;
     
