@@ -129,28 +129,37 @@ public class MiniMaxPlayer extends Player {
      *
      */
     public void evaluar(Nodo nodo, boolean esMax) {
-        //Metodo que obtenemos todos los hijos hasta llegar al nodo hoja
-        llegarANodoHoja(nodo,esMax);
-        //Al llegar al nodo hoja volvemos a la funcion evaluar anterior que le llama es decir a su nodo padre
-        //A partir de eso vemos
-        // Si  el padre es max
+        // Si el nodo es una hoja, asignar su valor de utilidad
+        if (nodo.getHijos().size() == 0) {
+            return;
+        }
+
+        // Recorrer los nodos hijos del nodo actual
+        for (Nodo hijo : nodo.getHijos()) {
+            evaluar(hijo, !esMax);
+        }
+
+        // Si el nivel actual es de maximización
         if (esMax) {
-            int mejorValor  = Integer.MIN_VALUE;
-            //Obtenemos sus hijos
+            int mejorValor = Integer.MIN_VALUE;
+
             for (Nodo hijo : nodo.getHijos()) {
                 int valorHijo = hijo.getValor();
                 mejorValor = Math.max(mejorValor, valorHijo);
             }
+
             // Asignar el mejor valor obtenido al nodo actual
             nodo.setValor(mejorValor);
-        } else { // Si  el padre es min
-            int peorValor = Integer.MAX_VALUE;
-            //Obtenemos sus hijos
+        } else { // Si el nivel actual es de minimización
+            int mejorValor = Integer.MAX_VALUE;
+
             for (Nodo hijo : nodo.getHijos()) {
                 int valorHijo = hijo.getValor();
-                peorValor = Math.min(peorValor, valorHijo);
+                mejorValor = Math.min(mejorValor, valorHijo);
             }
-            nodo.setValor(peorValor);
+
+            // Asignar el mejor valor obtenido al nodo actual
+            nodo.setValor(mejorValor);
         }
     }
 
@@ -160,16 +169,7 @@ public class MiniMaxPlayer extends Player {
      * @param esMax
      */
     private void llegarANodoHoja(Nodo nodo,boolean esMax) {
-        // Si el nodo es una hoja,es decir que no tienen hijos
-        //Pasamos al metodo que llamo a evaluar pero ya obteniendo el siguiente hijo
-        if (nodo.getHijos().size() == 0) {
-            return;
-        }
 
-        // Recorrer los nodos hijos del nodo actual
-        for (Nodo hijo : nodo.getHijos()) {
-            evaluar(hijo, !esMax);
-        }
 
     }
 
