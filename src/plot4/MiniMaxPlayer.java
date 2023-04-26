@@ -4,7 +4,6 @@
  * and open the template in the editor.
  */
 package plot4;
-
 import java.util.ArrayList;
 
 /**
@@ -33,13 +32,14 @@ public class MiniMaxPlayer extends Player {
     @Override
     public int turno(Grid tablero, int conecta) {
 
-       ///Creamos el nodo padre,con el nodo con el tablero actual
+        ///Creamos el nodo padre,con el nodo con el tablero actual
         Nodo nodoPadre = new Nodo(tablero);
         //Llamamos al metodo  minimax para que nos genere el arbol al ser la maquina min pasamos jugador min
         Minimax(nodoPadre,-1);
         //Una vez creado el arbol, aplicamos nuestro metodo de evaluación
         //Para ir pasando los valores obtenidos hacia atras hasta llegar al nodo raiz (nodo min)
         evaluar(nodoPadre,false);
+        //imprimirNodo(nodoPadre, ""); // Función que dibuja el arbol al completo
         //Sacamos todos los hijos del arraylist que tenemos
         ArrayList<Nodo> hijos = nodoPadre.getHijos();
         //Incializamos un nodo que va a ser el movimiento
@@ -78,7 +78,7 @@ public class MiniMaxPlayer extends Player {
         if (jugador == -1) {
             //Aplicamos la recursividad para ir creando un arbol
             recursividad(nodo,jugador,tableroactual);
-         //Si el jugador es Max
+            //Si el jugador es Max
         } else {
             //Aplicamos la recursividad para ir creando un arbol
             recursividad(nodo,jugador,tableroactual);
@@ -223,6 +223,44 @@ public class MiniMaxPlayer extends Player {
 
         public void addHijos(Nodo hijo){
             this.hijos.add(hijo);
+        }
+    }
+
+    /**
+     * Funcion que devuleve una String con el tablero en horizontal
+     * @param Tablero
+     * @return
+     */
+    public String pintaTableroHorizontal(Grid Tablero) {
+        String tablero = "[";
+        for (int i = 0; i < Tablero.filas; i++) {
+            for (int j = 0; j < Tablero.columnas; j++) {
+                tablero += Tablero.getGrid()[i][j] + ",";
+            }
+        }
+        tablero += "]";
+        return tablero;
+    }
+
+    /**
+     * Función que dibuja el arbol minimax al completo
+     * @param nodo
+     * @param espacio
+     */
+    private void imprimirNodo(Nodo nodo, String espacio) {
+        String tablero = pintaTableroHorizontal(nodo.getTablero()); // Obtenemos el tablero en horizontal
+
+        System.out.println(espacio + "├─> Tablero: " + tablero + " Valor: " + nodo.getValor());
+
+        ArrayList<Nodo> hijos = nodo.getHijos();
+        int numHijos = hijos.size();
+
+        for (int i = 0; i < numHijos - 1; i++) {
+            imprimirNodo(hijos.get(i), espacio + "│   ");
+        }
+
+        if (numHijos > 0) {
+            imprimirNodo(hijos.get(numHijos - 1), espacio + "    ");
         }
     }
 
