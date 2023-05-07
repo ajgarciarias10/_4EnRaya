@@ -130,6 +130,7 @@ public class Grid {
             ganar1 = 0;
             ganar2 = 0;
             for (int j = 0; (j < filas) && !salir; j++) {
+                System.out.println(tablero[j][i]);
                 if (tablero[j][i] != Main.VACIO) {
                     if (tablero[j][i] == Main.PLAYER1) {
                         ganar1++;
@@ -161,6 +162,7 @@ public class Grid {
                 }
             }
         }
+       int hola = 0;
         // Comprobar oblicuo. De izquierda a derecha
         for (int i = 0; i < filas && !salir; i++) {
             for (int j = 0; j < columnas && !salir; j++) {

@@ -50,7 +50,10 @@ public class MiniMaxPlayer extends Player {
          */
         int valor1 = 0;
         int valor2 = 0;
+        int vacio = 0;
 
+        boolean mirarjugadorROJO ;
+        boolean mirarjugadorAZUL;
         /**
          * Bucle anidado para comprobar la horizontal
          */
@@ -59,7 +62,7 @@ public class MiniMaxPlayer extends Player {
             ganar1 = 0;
             ganar2 = 0;
             for (int j = 0; (j < COLUMNAS); j++) {
-               //Miramos si el tablero no esta vacio
+                //Miramos si el tablero no esta vacio
                 if (tablero[i][j] != Main.VACIO) {
                     //Caso jugador 1
                     /**
@@ -68,7 +71,7 @@ public class MiniMaxPlayer extends Player {
                      */
                     if (tablero[i][j] == Main.PLAYER1) {
                         ganar1++;
-                    //En caso de que no sean del jugador1
+                        //En caso de que no sean del jugador1
                     }else{
                         //Reiniciamos el valor del conteo de fichas
                         ganar1 = 0;
@@ -81,37 +84,28 @@ public class MiniMaxPlayer extends Player {
                     } else{
                         //Hay que ver si hay posibilidad de poner mas fichas a la izquierda como a la derecha
                         int diferenciaconectaFicha1 = CONECTA - ganar1;
-                        //Miramos por la izquierda
-                        //Volvemos al inicio
-                        if(i-diferenciaconectaFicha1 >= 0){
-                            int a = 0,b = 0;
-                            /**
-                             * Bucle que lo utilizo para volver a la posicon inciial
-                             */
-                            for (int k = 1; k < ganar1; k--) {
-                                a = i-k;
-                                b = j;
-                            }
-                            /**
-                             * Tras llegar a la posicion incial comprobamos si para la izquierda hay fichas para poder seguir
-                             */
-                            //Variable para ver si es posible ver comparandolo con la diferenciadeconecta con la ficha 1 llegar a hacer el conecta
+
+                        //Miramos por la izquierda  <-----
+                        if(j-diferenciaconectaFicha1 >= 0){
                             int contadorIzquierda = 0 ;
-                            for (int l = 0; l < diferenciaconectaFicha1; l--) {
-                                if(tablero[a-l][b] == Main.PLAYER1 || tablero[a-l][j] == Main.VACIO){
+                            // Bucle para recorrer de derecha a izquierda <----
+                            for (int k = j-1; k >= j-diferenciaconectaFicha1; k--) {
+                                if(tablero[i][k] == Main.PLAYER1 || tablero[i][k] == Main.VACIO){
                                     contadorIzquierda++;
                                 }
-
                             }
+
                             if(contadorIzquierda == diferenciaconectaFicha1){
                                 if(ganar1 > valor1)valor1 = ganar1;
                             }
                         }
-                        if(i+diferenciaconectaFicha1 <= Filas){
+
+                        //Miramos por la derecha ---->
+                        if(j+diferenciaconectaFicha1 < COLUMNAS){
                             int contadorDerecha = 0 ;
-                            //Miramos por la derecha
-                            for (int k = 0; k < diferenciaconectaFicha1; k++) {
-                                if(tablero[i+k][j] == Main.PLAYER1 || tablero[i+k][j] == Main.VACIO){
+                            //Miramos desde la posicion i+1 hasta la psoicion i+difereciaconecta
+                            for (int k = j+1; k <= j+diferenciaconectaFicha1; k++) {
+                                if(tablero[i][k] == Main.PLAYER1 || tablero[i][k] == Main.VACIO){
                                     contadorDerecha++;
                                 }
                             }
@@ -140,37 +134,28 @@ public class MiniMaxPlayer extends Player {
                     }else{
                         //Hay que ver si hay posibilidad de poner mas fichas a la izquierda como a la derecha
                         int diferenciaconectaFicha2 = CONECTA - ganar2;
-                        //Miramos por la izquierda
-                        //Volvemos al inicio
-                        if(i-diferenciaconectaFicha2 >= 0){
-                            int a = 0,b = 0;
-                            /**
-                             * Bucle que lo utilizo para volver a la posicon inciial
-                             */
-                            for (int k = 1; k < ganar2; k--) {
-                                a = i-k;
-                                b = j;
-                            }
-                            /**
-                             * Tras llegar a la posicion incial comprobamos si para la izquierda hay fichas para poder seguir
-                             */
-                            //Variable para ver si es posible ver comparandolo con la diferenciadeconecta con la ficha 1 llegar a hacer el conecta
+
+                        //Miramos por la izquierda  <-----
+                        if(j-diferenciaconectaFicha2 >= 0){
                             int contadorIzquierda = 0 ;
-                            for (int l = 0; l < diferenciaconectaFicha2; l--) {
-                                if(tablero[a-l][b] == Main.PLAYER2 || tablero[i-l][b] == Main.VACIO){
+                            // Bucle para recorrer de derecha a izquierda <----
+                            for (int k = j-1; k >= j-diferenciaconectaFicha2; k--) {
+                                if(tablero[i][k] == Main.PLAYER2 || tablero[i][k] == Main.VACIO){
                                     contadorIzquierda++;
                                 }
-
                             }
+
                             if(contadorIzquierda == diferenciaconectaFicha2){
                                 if(ganar2 > valor2)valor2 = ganar2;
                             }
                         }
-                        if(i+diferenciaconectaFicha2 <= Filas){
+
+                        //Miramos por la derecha ---->
+                        if(j+diferenciaconectaFicha2 < COLUMNAS){
                             int contadorDerecha = 0 ;
-                            //Miramos por la derecha
-                            for (int k = 0; k < diferenciaconectaFicha2; k++) {
-                                if(tablero[i+k][j] == Main.PLAYER2 || tablero[i+k][j] == Main.VACIO){
+                            //Miramos desde la posicion i+1 hasta la psoicion i+difereciaconecta
+                            for (int k = j+1; k <= j+diferenciaconectaFicha2; k++) {
+                                if(tablero[i][k] == Main.PLAYER2 || tablero[i][k] == Main.VACIO){
                                     contadorDerecha++;
                                 }
                             }
@@ -187,145 +172,150 @@ public class MiniMaxPlayer extends Player {
                 }
             }
         }
+
+
         /**
          * Bucle anidado para comprobar la Vertical
          */
         for (int i = 0; (i < COLUMNAS) ; i++) {
             ganar1 = 0;
             ganar2 = 0;
-            for (int j = 0; (j < Filas) ; j++) {
+            for (int j = 0; (j < Filas); j++) {
                 //Miramos si el tablero no esta vacio
                 if (tablero[j][i] != Main.VACIO) {
-                    //Caso jugador 1
                     /**
-                     * Comprobamos si hay fichas en la posicion horizontal:
-                     * [i][j] del jugador 1
+                     * Vemos si en la ultima posicion de posible de conecta ha habido un conecta
                      */
-                    if (tablero[j][i] == Main.PLAYER1) {
-                        ganar1++;
-                        //En caso de que no sean del jugador1
-                    }else{
-                        //Reiniciamos el valor del conteo de fichas
-                        ganar1 = 0;
-
-                    }
-                    //¿Ha ganado el jugador 1?
-                    if(ganar1 >= CONECTA){
-                        //Y Devolvemos el ganador
-                        return Main.PLAYER1;
-                    } else{
-                        //Hay que ver si hay posibilidad de poner mas fichas a la izquierda como a la derecha
-                        int diferenciaconectaFicha1 = CONECTA - ganar1;
-                        //Miramos hacia abajo
-                        //Volvemos al inicio
-                        if(j-diferenciaconectaFicha1 >= 0){
-                            int a = 0,b = 0;
-                            /**
-                             * Bucle que lo utilizo para volver a la posicon inciial
-                             */
-                            for (int k = 1; k < ganar1; k--) {
-                                a = i;
-                                b = j-k;
-                            }
-                            /**
-                             * Tras llegar a la posicion incial comprobamos si para la izquierda hay fichas para poder seguir
-                             */
-                            //Variable para ver si es posible ver comparandolo con la diferenciadeconecta con la ficha 1 llegar a hacer el conecta
-                            int contadorAbajo = 0 ;
-                            for (int l = 0; l < diferenciaconectaFicha1; l--) {
-                                if(tablero[a][b-l] == Main.PLAYER1 || tablero[i][b-l] == Main.VACIO){
-                                    contadorAbajo++;
+                    if (Filas -  j < CONECTA) {
+                        int esconecta;
+                        if (tablero[j][i] == Main.PLAYER1) {
+                            ganar1++;
+                            //¿Ha ganado el jugador 1?
+                            if (ganar1 >= CONECTA) {
+                                //Y Devolvemos el ganador
+                                return Main.PLAYER1;
+                            }else{
+                                //true para azul
+                                esconecta = mirarsihaymasfichasdecolor(j, i, true, tablero);
+                                if(esconecta == CONECTA-1){
+                                    return  Main.PLAYER1;
                                 }
-
+                                break;
                             }
-                            if(contadorAbajo == diferenciaconectaFicha1){
-                                if(ganar1 > valor1)valor1 = ganar1;
-                            }
-                        }
-                        if(j+diferenciaconectaFicha1 <= Filas){
-                            int contadorArriba = 0 ;
-                            //Miramos por  arriba
-                            for (int k = 0; k < diferenciaconectaFicha1; k++) {
-                                if(tablero[i][j+k] == Main.PLAYER1 || tablero[i][j+k] == Main.VACIO){
-                                    contadorArriba++;
+                        } else {
+                            ganar1++;
+                            //¿Ha ganado el jugador 1?
+                            if (ganar1 >= CONECTA) {
+                                //Y Devolvemos el ganador
+                                return Main.PLAYER1;
+                            }else{
+                                //false para rojo
+                                esconecta = mirarsihaymasfichasdecolor(j, i, false, tablero);
+                                if(esconecta == CONECTA-1){
+                                    return  Main.PLAYER2;
                                 }
+                                break;
                             }
-                            if(contadorArriba == diferenciaconectaFicha1){
-                                if(ganar1 > valor1)valor1 = ganar1;
-                            }
+
                         }
 
-                    }
-                    //En caso de que no haya ganado el jugador1 miramos el jugador 2
-                    /**
-                     * Comprobamos si hay fichas en la posicion horizontal:
-                     * [i][j] del jugador 2
-                     */
-                    if(tablero[i][j] == Main.PLAYER2){
-                        ganar2++;
-                    }
-                    //En caso de que no sean del jugador2
-                    else{
-                        ganar2 = 0;
-                    }
-                    //¿Ha ganado el jugador 2?
-                    if(ganar2 >= CONECTA){
-                        //Y Devolvemos el ganador
-                        return Main.PLAYER2;
-                    }else{
-                        //Hay que ver si hay posibilidad de poner mas fichas a la izquierda como a la derecha
-                        int diferenciaconectaFicha2 = CONECTA - ganar2;
-                        //Miramos por la izquierda
-                        //Volvemos al inicio
-                        if(i-diferenciaconectaFicha2 >= 0){
-                            int a = 0,b = 0;
-                            /**
-                             * Bucle que lo utilizo para volver a la posicon inciial
-                             */
-                            for (int k = 1; k < ganar2; k--) {
-                                a = i;
-                                b = j-k;
-                            }
-                            /**
-                             * Tras llegar a la posicion incial comprobamos si para la izquierda hay fichas para poder seguir
-                             */
-                            //Variable para ver si es posible ver comparandolo con la diferenciadeconecta con la ficha 1 llegar a hacer el conecta
-                            int contadorAbajo = 0 ;
-                            for (int l = 0; l < diferenciaconectaFicha2; l--) {
-                                if(tablero[a][b-l] == Main.PLAYER2 || tablero[i][b-l] == Main.VACIO){
-                                    contadorAbajo++;
-                                }
 
-                            }
-                            if(contadorAbajo == diferenciaconectaFicha2){
-                                if(ganar2 > valor2)valor2 = ganar2;
+                    } else {
+                        /**
+                         * Comprobamos si hay fichas en la posicion vertical:
+                         * [j][i] del jugador 1
+                         */
+                        if (tablero[j][i] == Main.PLAYER1) {
+                            ganar2 = 0;
+                            mirarjugadorROJO = false;
+                            mirarjugadorAZUL = true;
+                        }
+                        /**
+                         * Comprobamos si hay fichas en la posicion vertical:
+                         * [j][i] del jugador 2
+                         */
+                        else {
+                            ganar1 = 0;
+                            mirarjugadorAZUL = false;
+                            mirarjugadorROJO = true;
+                        }
+                        //Caso jugador 1
+                        if (mirarjugadorAZUL) {
+                            ganar1++;
+                            //¿Ha ganado el jugador 1?
+                            if (ganar1 >= CONECTA) {
+                                //Y Devolvemos el ganador
+                                return Main.PLAYER1;
+                            } else {
+                                //Hay posibilidad de  hacer un conecta si
+                                if (vacio + ganar1 >= CONECTA && ganar1 > valor1) {
+                                    //Guardamos el valor
+                                    valor1 = ganar1;
+                                }
                             }
                         }
-                        if(j+diferenciaconectaFicha2 <= Filas){
-                            int contadorArriba = 0 ;
-                            //Miramos por  arriba
-                            for (int k = 0; k < diferenciaconectaFicha2; k++) {
-                                if(tablero[i][j+k] == Main.PLAYER1 || tablero[i][j+k] == Main.VACIO){
-                                    contadorArriba++;
+                        if (mirarjugadorROJO) {
+                            ganar2++;
+                            // Gana el jugador 2
+                            if (ganar2 >= CONECTA) {
+                                return Main.PLAYER2;
+                            } else {
+                                //Hay posibilidad de  hacer un conecta si
+                                if (vacio + ganar2 >= CONECTA && ganar2 > valor2) {
+                                    //Guardamos el valor
+                                    valor2 = ganar2;
                                 }
-                            }
-                            if(contadorArriba == diferenciaconectaFicha2){
-                                if(ganar2 > valor2)valor2 = ganar2;
                             }
                         }
                     }
-
-
 
                 } else {
+                    vacio++;
                     ganar1 = 0;
                     ganar2 = 0;
                 }
+                }
             }
+
+        int heuristica = valor1-valor2;
+        int ganador = 0 ;
+        if(heuristica>0){
+            ganador = 1;
+        }else if(heuristica<0){
+            ganador = -1;
+        } else if (heuristica == 0) {
+            ganador = 0;
         }
 
-return 0;
+        return ganador;
+
     }
+
+    private int mirarsihaymasfichasdecolor(int j,int i, boolean azOred,int tablero[][]) {
+        int esConecta= 0;
+        for (int a = 0; a < j; a++) {
+            if(azOred){
+                if (tablero[j+a][i] == Main.PLAYER1) {
+                        esConecta++;
+                }else{
+                    esConecta = 0;
+                    break;
+                }
+
+            }
+            else{
+                if (tablero[j+a][i] == Main.PLAYER2) {
+                    esConecta++;
+                } else{
+                    esConecta = 0;
+                    break;
+                }
+            }
+
+        }
+        return esConecta;
+    }
+
     /**
      * @brief funcion que determina donde colocar la ficha este turno
      * @param tablero Tablero de juego
