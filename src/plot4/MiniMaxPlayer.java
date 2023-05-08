@@ -24,10 +24,10 @@ public class MiniMaxPlayer extends Player {
 
     private  final int PROFUNDIDAD = 4;
 
-    private  final int CONECTA = 3;
-    private  final int Filas = 3;
+    private  final int CONECTA = 4;
+    private  final int Filas = 6;
 
-    private  final int COLUMNAS = 3;
+    private  final int COLUMNAS = 7;
     /**
      *  Funcion heuristica
      * @param tablero
@@ -52,8 +52,99 @@ public class MiniMaxPlayer extends Player {
         int valor2 = 0;
         int vacio = 0;
 
-        boolean mirarjugadorROJO ;
-        boolean mirarjugadorAZUL;
+
+
+
+
+        /**
+         * Bucle anidado para comprobar la Vertical
+         */
+        for (int i = 0; (i < COLUMNAS) ; i++) {
+            ganar1 = 0;
+            ganar2 = 0;
+            vacio = 0;
+            for (int j = 0; (j < Filas); j++) {
+                //Miramos si el tablero no esta vacio
+                if (tablero[j][i] != Main.VACIO) {
+                    /**
+                     * Comprobamos que en las zonas que quedan solo una cantidad pequeña de fichas
+                     * vemos si es posible hacer el conecta
+                     */
+                    if(Filas - j < CONECTA){
+                        //Si el jugador es 1
+                        if(deQueJugadorEs(tablero,i,j)){
+                            ganar1++;
+                            //Comprobamos si justamente ahí el jugador ha ganado
+                            if(jugadorHaGanado(ganar1)){
+                                return  Main.PLAYER1;
+                            }else{
+                                //Miramos si con las fichas vacias hay posibilidad de hacer un 4 en raya
+                                if(vacio +ganar1 == CONECTA && ganar1>valor1){
+                                    valor1 = ganar1;
+                                }
+                                //Cuantas fichas le quedan para saber si puede ganar
+                                //Aqui como estamos en un valor limite no puede pasar la cantidad de conecta  -1
+                                // ya que estariamos hablando de superar el tamaño del tablero
+                                int fichasRestantes = CONECTA - ganar1;
+                                //En caso de que mirando las siguientes fichas gane el jugador 1
+                                if(mirarsiguientesFichas(fichasRestantes,tablero,i,j,ganar1,true)){
+                                    return  Main.PLAYER1;
+                                }else{
+                                    break;
+                                }
+                            }
+                        }
+                        //Si el jugador es 2
+                        else {
+                            ganar2++;
+                            //Comprobamos si justamente ahí el jugador ha ganado
+                            if(jugadorHaGanado(ganar2)){
+                                return  Main.PLAYER2;
+                            }else{
+                                //Miramos si con las fichas vacias hay posibilidad de hacer un 4 en raya
+                                if(vacio +ganar2 >= CONECTA && ganar2>valor2){
+                                    valor2 = ganar2;
+                                }
+                                //Cuantas fichas le quedan para saber si puede ganar
+                                int fichasRestantes = CONECTA - ganar2;
+                                //En caso de que mirando las siguientes fichas gane el jugador 2
+                                if(mirarsiguientesFichas(fichasRestantes,tablero,i,j,ganar2,false)){
+                                    return  Main.PLAYER2;
+                                }else{
+                                    break;
+                                }
+                            }
+                        }
+                    }else{
+                        //Que jugador sera?
+                        //Si es azul
+                        if(deQueJugadorEs(tablero,i,j)){
+                            ganar1++;
+                            ganar2=0;
+                            if(jugadorHaGanado(ganar1)){
+                                return Main.PLAYER1;
+                            }
+                        }
+                        //Si es rojo
+                        else{
+                            ganar2++;
+                            ganar1=0;
+                            if(jugadorHaGanado(ganar2)){
+                                return Main.PLAYER2;
+                            }
+
+                        }
+                    }
+
+
+                } else {
+                    vacio++;
+                    ganar1 = 0;
+                    ganar2 = 0;
+                }
+                }
+            }
+
         /**
          * Bucle anidado para comprobar la horizontal
          */
@@ -64,106 +155,7 @@ public class MiniMaxPlayer extends Player {
             for (int j = 0; (j < COLUMNAS); j++) {
                 //Miramos si el tablero no esta vacio
                 if (tablero[i][j] != Main.VACIO) {
-                    //Caso jugador 1
-                    /**
-                     * Comprobamos si hay fichas en la posicion horizontal:
-                     * [i][j] del jugador 1
-                     */
-                    if (tablero[i][j] == Main.PLAYER1) {
-                        ganar1++;
-                        //En caso de que no sean del jugador1
-                    }else{
-                        //Reiniciamos el valor del conteo de fichas
-                        ganar1 = 0;
 
-                    }
-                    //¿Ha ganado el jugador 1?
-                    if(ganar1 >= CONECTA){
-                        //Y Devolvemos el ganador
-                        return Main.PLAYER1;
-                    } else{
-                        //Hay que ver si hay posibilidad de poner mas fichas a la izquierda como a la derecha
-                        int diferenciaconectaFicha1 = CONECTA - ganar1;
-
-                        //Miramos por la izquierda  <-----
-                        if(j-diferenciaconectaFicha1 >= 0){
-                            int contadorIzquierda = 0 ;
-                            // Bucle para recorrer de derecha a izquierda <----
-                            for (int k = j-1; k >= j-diferenciaconectaFicha1; k--) {
-                                if(tablero[i][k] == Main.PLAYER1 || tablero[i][k] == Main.VACIO){
-                                    contadorIzquierda++;
-                                }
-                            }
-
-                            if(contadorIzquierda == diferenciaconectaFicha1){
-                                if(ganar1 > valor1)valor1 = ganar1;
-                            }
-                        }
-
-                        //Miramos por la derecha ---->
-                        if(j+diferenciaconectaFicha1 < COLUMNAS){
-                            int contadorDerecha = 0 ;
-                            //Miramos desde la posicion i+1 hasta la psoicion i+difereciaconecta
-                            for (int k = j+1; k <= j+diferenciaconectaFicha1; k++) {
-                                if(tablero[i][k] == Main.PLAYER1 || tablero[i][k] == Main.VACIO){
-                                    contadorDerecha++;
-                                }
-                            }
-                            if(contadorDerecha == diferenciaconectaFicha1){
-                                if(ganar1 > valor1)valor1 = ganar1;
-                            }
-                        }
-
-                    }
-                    //En caso de que no haya ganado el jugador1 miramos el jugador 2
-                    /**
-                     * Comprobamos si hay fichas en la posicion horizontal:
-                     * [i][j] del jugador 2
-                     */
-                    if(tablero[i][j] == Main.PLAYER2){
-                        ganar2++;
-                    }
-                    //En caso de que no sean del jugador2
-                    else{
-                        ganar2 = 0;
-                    }
-                    //¿Ha ganado el jugador 2?
-                    if(ganar2 >= CONECTA){
-                        //Y Devolvemos el ganador
-                        return Main.PLAYER2;
-                    }else{
-                        //Hay que ver si hay posibilidad de poner mas fichas a la izquierda como a la derecha
-                        int diferenciaconectaFicha2 = CONECTA - ganar2;
-
-                        //Miramos por la izquierda  <-----
-                        if(j-diferenciaconectaFicha2 >= 0){
-                            int contadorIzquierda = 0 ;
-                            // Bucle para recorrer de derecha a izquierda <----
-                            for (int k = j-1; k >= j-diferenciaconectaFicha2; k--) {
-                                if(tablero[i][k] == Main.PLAYER2 || tablero[i][k] == Main.VACIO){
-                                    contadorIzquierda++;
-                                }
-                            }
-
-                            if(contadorIzquierda == diferenciaconectaFicha2){
-                                if(ganar2 > valor2)valor2 = ganar2;
-                            }
-                        }
-
-                        //Miramos por la derecha ---->
-                        if(j+diferenciaconectaFicha2 < COLUMNAS){
-                            int contadorDerecha = 0 ;
-                            //Miramos desde la posicion i+1 hasta la psoicion i+difereciaconecta
-                            for (int k = j+1; k <= j+diferenciaconectaFicha2; k++) {
-                                if(tablero[i][k] == Main.PLAYER2 || tablero[i][k] == Main.VACIO){
-                                    contadorDerecha++;
-                                }
-                            }
-                            if(contadorDerecha == diferenciaconectaFicha2){
-                                if(ganar2 > valor2)valor2 = ganar2;
-                            }
-                        }
-                    }
                 } //Si lo está
                 else {
                     //Reseteamos ganar
@@ -173,109 +165,6 @@ public class MiniMaxPlayer extends Player {
             }
         }
 
-
-        /**
-         * Bucle anidado para comprobar la Vertical
-         */
-        for (int i = 0; (i < COLUMNAS) ; i++) {
-            ganar1 = 0;
-            ganar2 = 0;
-            for (int j = 0; (j < Filas); j++) {
-                //Miramos si el tablero no esta vacio
-                if (tablero[j][i] != Main.VACIO) {
-                    /**
-                     * Vemos si en la ultima posicion de posible de conecta ha habido un conecta
-                     */
-                    if (Filas -  j < CONECTA) {
-                        int esconecta;
-                        if (tablero[j][i] == Main.PLAYER1) {
-                            ganar1++;
-                            //¿Ha ganado el jugador 1?
-                            if (ganar1 >= CONECTA) {
-                                //Y Devolvemos el ganador
-                                return Main.PLAYER1;
-                            }else{
-                                //true para azul
-                                esconecta = mirarsihaymasfichasdecolor(j, i, true, tablero);
-                                if(esconecta == CONECTA-1){
-                                    return  Main.PLAYER1;
-                                }
-                                break;
-                            }
-                        } else {
-                            ganar1++;
-                            //¿Ha ganado el jugador 1?
-                            if (ganar1 >= CONECTA) {
-                                //Y Devolvemos el ganador
-                                return Main.PLAYER1;
-                            }else{
-                                //false para rojo
-                                esconecta = mirarsihaymasfichasdecolor(j, i, false, tablero);
-                                if(esconecta == CONECTA-1){
-                                    return  Main.PLAYER2;
-                                }
-                                break;
-                            }
-
-                        }
-
-
-                    } else {
-                        /**
-                         * Comprobamos si hay fichas en la posicion vertical:
-                         * [j][i] del jugador 1
-                         */
-                        if (tablero[j][i] == Main.PLAYER1) {
-                            ganar2 = 0;
-                            mirarjugadorROJO = false;
-                            mirarjugadorAZUL = true;
-                        }
-                        /**
-                         * Comprobamos si hay fichas en la posicion vertical:
-                         * [j][i] del jugador 2
-                         */
-                        else {
-                            ganar1 = 0;
-                            mirarjugadorAZUL = false;
-                            mirarjugadorROJO = true;
-                        }
-                        //Caso jugador 1
-                        if (mirarjugadorAZUL) {
-                            ganar1++;
-                            //¿Ha ganado el jugador 1?
-                            if (ganar1 >= CONECTA) {
-                                //Y Devolvemos el ganador
-                                return Main.PLAYER1;
-                            } else {
-                                //Hay posibilidad de  hacer un conecta si
-                                if (vacio + ganar1 >= CONECTA && ganar1 > valor1) {
-                                    //Guardamos el valor
-                                    valor1 = ganar1;
-                                }
-                            }
-                        }
-                        if (mirarjugadorROJO) {
-                            ganar2++;
-                            // Gana el jugador 2
-                            if (ganar2 >= CONECTA) {
-                                return Main.PLAYER2;
-                            } else {
-                                //Hay posibilidad de  hacer un conecta si
-                                if (vacio + ganar2 >= CONECTA && ganar2 > valor2) {
-                                    //Guardamos el valor
-                                    valor2 = ganar2;
-                                }
-                            }
-                        }
-                    }
-
-                } else {
-                    vacio++;
-                    ganar1 = 0;
-                    ganar2 = 0;
-                }
-                }
-            }
 
         int heuristica = valor1-valor2;
         int ganador = 0 ;
@@ -291,30 +180,92 @@ public class MiniMaxPlayer extends Player {
 
     }
 
-    private int mirarsihaymasfichasdecolor(int j,int i, boolean azOred,int tablero[][]) {
-        int esConecta= 0;
-        for (int a = 0; a < j; a++) {
-            if(azOred){
-                if (tablero[j+a][i] == Main.PLAYER1) {
-                        esConecta++;
-                }else{
-                    esConecta = 0;
+    /**
+     * Metodo que mira desde la posicion Filas -j <= Conecta es decir
+     * Si en un 5x6  estuvieramos en j = 1 mirariamos las siguientes filas desde esa fila
+     * Devolvera true si se se logra conecta con la ficha del color en j=1
+     * Y en caso contrario false
+     *
+     * @param fichasRestantes
+     * @param tablero
+     * @param i
+     * @param j
+     * @param ganar
+     * @param b
+     * @return
+     */
+    private boolean mirarsiguientesFichas(int fichasRestantes, int[][] tablero, int i , int j, int ganar, boolean b) {
+       boolean valor = false;
+        if(b){
+            for (int k = 0; k < fichasRestantes; k++) {
+                if(j+k < Filas) {
+                    if (tablero[j + k][i] == Main.PLAYER1) {
+                        ganar++;
+                        if (jugadorHaGanado(ganar)) {
+                            valor = true;
+                        }
+                    } else {
+                        break;
+                    }
+                }
+                else{
                     break;
                 }
-
             }
-            else{
-                if (tablero[j+a][i] == Main.PLAYER2) {
-                    esConecta++;
-                } else{
-                    esConecta = 0;
-                    break;
-                }
-            }
-
         }
-        return esConecta;
+        else{
+            for (int k = 0; k < fichasRestantes; k++) {
+                if(j+k < Filas) {
+                    if (tablero[j + k][i] == Main.PLAYER2) {
+                        ganar++;
+                        if (jugadorHaGanado(ganar)) {
+                            valor = true;
+                        }
+                    } else {
+                        break;
+                    }
+                }
+                else{
+                    break;
+                }
+            }
+        }
+        return  valor;
     }
+
+    /**
+     * Metodo que verifica a partir numerodeFichas de un jugador si ha ganado o no
+     * @param numerodeFichas
+     * @return
+     */
+    private boolean jugadorHaGanado(int numerodeFichas) {
+        boolean valor;
+        if(numerodeFichas == CONECTA){
+            valor = true;
+        }
+        else{
+            valor = false;
+        }
+        return valor;
+    }
+
+    /**
+     * Metodo que verifica a partir del tablero de que color es la ficha que hay
+     * @param tablero
+     * @return
+     */
+
+    private boolean deQueJugadorEs(int[][] tablero, int i , int j) {
+       boolean valor;
+        if(tablero[j][i] == Main.PLAYER1){
+            valor = true;
+        }
+        else{
+            valor = false;
+        }
+        return  valor;
+    }
+
 
     /**
      * @brief funcion que determina donde colocar la ficha este turno
