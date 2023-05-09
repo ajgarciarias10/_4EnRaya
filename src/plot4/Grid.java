@@ -4,6 +4,8 @@
  */
 package plot4;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author José María Serrano
@@ -162,7 +164,7 @@ public class Grid {
                 }
             }
         }
-       int hola = 0;
+
         // Comprobar oblicuo. De izquierda a derecha
         for (int i = 0; i < filas && !salir; i++) {
             for (int j = 0; j < columnas && !salir; j++) {
@@ -173,6 +175,7 @@ public class Grid {
                 while (a < filas && b < columnas && !salir) {
                     if (tablero[a][b] != Main.VACIO) {
                         if (tablero[a][b] == Main.PLAYER1) {
+
                             ganar1++;
                         } else {
                             ganar1 = 0;
