@@ -52,10 +52,6 @@ public class MiniMaxPlayer extends Player {
         int valor2 = 0;
         int vacio = 0;
 
-
-
-
-
         /**
          * Bucle anidado para comprobar la Vertical
          */
@@ -72,7 +68,7 @@ public class MiniMaxPlayer extends Player {
                      */
                     if(Filas - j < CONECTA){
                         //Si el jugador es 1
-                        if(deQueJugadorEs(tablero,i,j)){
+                        if(deQueJugadorEs(tablero,i,j,1)){
                             ganar1++;
                             //Comprobamos si justamente ahí el jugador ha ganado
                             if(jugadorHaGanado(ganar1)){
@@ -87,7 +83,7 @@ public class MiniMaxPlayer extends Player {
                                 // ya que estariamos hablando de superar el tamaño del tablero
                                 int fichasRestantes = CONECTA - ganar1;
                                 //En caso de que mirando las siguientes fichas gane el jugador 1
-                                if(mirarsiguientesFichas(fichasRestantes,tablero,i,j,ganar1,true)){
+                                if(mirarsiguientesFichas(fichasRestantes,tablero,i,j,ganar1,true,1)){
                                     return  Main.PLAYER1;
                                 }else{
                                     break;
@@ -108,17 +104,18 @@ public class MiniMaxPlayer extends Player {
                                 //Cuantas fichas le quedan para saber si puede ganar
                                 int fichasRestantes = CONECTA - ganar2;
                                 //En caso de que mirando las siguientes fichas gane el jugador 2
-                                if(mirarsiguientesFichas(fichasRestantes,tablero,i,j,ganar2,false)){
+                                if(mirarsiguientesFichas(fichasRestantes,tablero,i,j,ganar2,false,1)){
                                     return  Main.PLAYER2;
                                 }else{
                                     break;
                                 }
                             }
                         }
-                    }else{
+                    }
+                    else{
                         //Que jugador sera?
                         //Si es azul
-                        if(deQueJugadorEs(tablero,i,j)){
+                        if(deQueJugadorEs(tablero,i,j,1)){
                             ganar1++;
                             ganar2=0;
                             if(jugadorHaGanado(ganar1)){
@@ -155,6 +152,76 @@ public class MiniMaxPlayer extends Player {
             for (int j = 0; (j < COLUMNAS); j++) {
                 //Miramos si el tablero no esta vacio
                 if (tablero[i][j] != Main.VACIO) {
+                    /**
+                     * Comprobamos que en las zonas que quedan solo una cantidad pequeña de fichas
+                     * vemos si es posible hacer el conecta
+                     */
+                    if(COLUMNAS - j < CONECTA){
+                        //Si el jugador es 1
+                        if(deQueJugadorEs(tablero,i,j,-1)){
+                            ganar1++;
+                            //Comprobamos si justamente ahí el jugador ha ganado
+                            if(jugadorHaGanado(ganar1)){
+                                return  Main.PLAYER1;
+                            }else{
+                                //Miramos si con las fichas vacias hay posibilidad de hacer un 4 en raya
+                                if(vacio +ganar1 == CONECTA && ganar1>valor1){
+                                    valor1 = ganar1;
+                                }
+                                //Cuantas fichas le quedan para saber si puede ganar
+                                //Aqui como estamos en un valor limite no puede pasar la cantidad de conecta  -1
+                                // ya que estariamos hablando de superar el tamaño del tablero
+                                int fichasRestantes = CONECTA - ganar1;
+                                //En caso de que mirando las siguientes fichas gane el jugador 1
+                                if(mirarsiguientesFichas(fichasRestantes,tablero,i,j,ganar1,true,-1)){
+                                    return  Main.PLAYER1;
+                                }else{
+                                    break;
+                                }
+                            }
+                        }
+                        //Si el jugador es 2
+                        else {
+                            ganar2++;
+                            //Comprobamos si justamente ahí el jugador ha ganado
+                            if(jugadorHaGanado(ganar2)){
+                                return  Main.PLAYER2;
+                            }else{
+                                //Miramos si con las fichas vacias hay posibilidad de hacer un 4 en raya
+                                if(vacio +ganar2 >= CONECTA && ganar2>valor2){
+                                    valor2 = ganar2;
+                                }
+                                //Cuantas fichas le quedan para saber si puede ganar
+                                int fichasRestantes = CONECTA - ganar2;
+                                //En caso de que mirando las siguientes fichas gane el jugador 2
+                                if(mirarsiguientesFichas(fichasRestantes,tablero,i,j,ganar2,false,-1)){
+                                    return  Main.PLAYER2;
+                                }else{
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    else{
+                        //Que jugador sera?
+                        //Si es azul
+                        if(deQueJugadorEs(tablero,i,j,-1)){
+                            ganar1++;
+                            ganar2=0;
+                            if(jugadorHaGanado(ganar1)){
+                                return Main.PLAYER1;
+                            }
+                        }
+                        //Si es rojo
+                        else{
+                            ganar2++;
+                            ganar1=0;
+                            if(jugadorHaGanado(ganar2)){
+                                return Main.PLAYER2;
+                            }
+
+                        }
+                    }
 
                 } //Si lo está
                 else {
@@ -194,42 +261,77 @@ public class MiniMaxPlayer extends Player {
      * @param b
      * @return
      */
-    private boolean mirarsiguientesFichas(int fichasRestantes, int[][] tablero, int i , int j, int ganar, boolean b) {
+    private boolean mirarsiguientesFichas(int fichasRestantes, int[][] tablero, int i , int j, int ganar, boolean b,int vertical) {
        boolean valor = false;
-        if(b){
-            for (int k = 0; k < fichasRestantes; k++) {
-                if(j+k < Filas) {
-                    if (tablero[j + k][i] == Main.PLAYER1) {
-                        ganar++;
-                        if (jugadorHaGanado(ganar)) {
-                            valor = true;
-                        }
-                    } else {
-                        break;
-                    }
-                }
-                else{
-                    break;
-                }
-            }
-        }
-        else{
-            for (int k = 0; k < fichasRestantes; k++) {
-                if(j+k < Filas) {
-                    if (tablero[j + k][i] == Main.PLAYER2) {
-                        ganar++;
-                        if (jugadorHaGanado(ganar)) {
-                            valor = true;
-                        }
-                    } else {
-                        break;
-                    }
-                }
-                else{
-                    break;
-                }
-            }
-        }
+        //Modo vertical
+       if(vertical == 1) {
+           if (b) {
+               for (int k = 0; k < fichasRestantes; k++) {
+                   if (j + k < Filas) {
+                       if (tablero[j + k][i] == Main.PLAYER1) {
+                           ganar++;
+                           if (jugadorHaGanado(ganar)) {
+                               valor = true;
+                           }
+                       } else {
+                           break;
+                       }
+                   } else {
+                       break;
+                   }
+               }
+           } else {
+               for (int k = 0; k < fichasRestantes; k++) {
+                   if (j + k < Filas) {
+                       if (tablero[j + k][i] == Main.PLAYER2) {
+                           ganar++;
+                           if (jugadorHaGanado(ganar)) {
+                               valor = true;
+                           }
+                       } else {
+                           break;
+                       }
+                   } else {
+                       break;
+                   }
+               }
+           }
+       }//Modo horizontal
+       else if (vertical == -1) {
+           if (b) {
+               for (int k = 0; k < fichasRestantes; k++) {
+                   if (j + k < COLUMNAS) {
+                       if (tablero[i][j + k] == Main.PLAYER1) {
+                           ganar++;
+                           if (jugadorHaGanado(ganar)) {
+                               valor = true;
+                           }
+                       } else {
+                           break;
+                       }
+                   } else {
+                       break;
+                   }
+               }
+           }
+           else {
+               for (int k = 0; k < fichasRestantes; k++) {
+                   if (j + k < Filas) {
+                       if (tablero[i][j + k]  == Main.PLAYER2) {
+                           ganar++;
+                           if (jugadorHaGanado(ganar)) {
+                               valor = true;
+                           }
+                       } else {
+                           break;
+                       }
+                   } else {
+                       break;
+                   }
+               }
+           }
+           
+       }
         return  valor;
     }
 
@@ -252,17 +354,30 @@ public class MiniMaxPlayer extends Player {
     /**
      * Metodo que verifica a partir del tablero de que color es la ficha que hay
      * @param tablero
+     * @param  i
+     * @param j
+     * @param  vertical
      * @return
      */
 
-    private boolean deQueJugadorEs(int[][] tablero, int i , int j) {
-       boolean valor;
-        if(tablero[j][i] == Main.PLAYER1){
-            valor = true;
-        }
-        else{
-            valor = false;
-        }
+    private boolean deQueJugadorEs(int[][] tablero, int i , int j, int vertical) {
+       boolean valor = false;
+        //Modo vertical
+       if(vertical == 1) {
+           if (tablero[j][i] == Main.PLAYER1) {
+               valor = true;
+           } else {
+               valor = false;
+           }
+       }//Modo horizontal
+       else if (vertical == -1) {
+           if (tablero[i][j] == Main.PLAYER1) {
+               valor = true;
+           } else {
+               valor = false;
+           }
+       }
+       //devolvemos  el valor
         return  valor;
     }
 
