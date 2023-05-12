@@ -420,13 +420,13 @@ public class MiniMaxRestrainedPlayer extends Player {
         /**
          * Bucle anidado para comprobar oblicuo. De derecha  a izquierda
          */
-        for (int i = 0; i < Filas; i++) {
+        for (int i = Filas - 1; i < Filas; i++) {
             for (int j = 0; j < COLUMNAS; j++) {
                 int a = i;
                 int b = j;
                 ganar1 = 0;
                 ganar2 = 0;
-                while (a >= Filas && b < COLUMNAS) {
+                while (a >= 0 && b < COLUMNAS) {
                     if (tablero[a][b] != Main.VACIO) {
                         //Caso jugador 1
                         /**
@@ -447,21 +447,19 @@ public class MiniMaxRestrainedPlayer extends Player {
                             return Main.PLAYER1;
                         } else{
                             boolean valido;
-                            //Izquierda Abajo
                             int contadorEspaciosDerAbajo = 0;
-                            //Derecha Arriba
                             int contadorEspaciosIzqArriba = 0;
                             int c;
                             int d;
                             //Hay que ver si hay posibilidad de poner mas fichas a la izquierda como a la derecha
                             int diferenciaconectaFicha1 = CONECTA - ganar1;
-                            //Miramos hacia Derecha Arriba  <---
-                            if(a-(ganar1-1)-diferenciaconectaFicha1 <= 0 && b-(ganar1-1)-diferenciaconectaFicha1 < COLUMNAS && tablero[a][b]==Main.PLAYER1){
-                                c=a-ganar1-1;
+                            //Miramos hacia izq Arriba  <---
+                            if(a-(ganar1-1)-diferenciaconectaFicha1 >= 0 && b-(ganar1-1)-diferenciaconectaFicha1 >= 0 && tablero[a][b]==Main.PLAYER1){
+                                c=a-ganar1+1;
                                 d=b-ganar1+1;
                                 int contadorIzqArriba = 0;// entramos en el if si la fila o la columna es mayor que 0 al restar importante el "||"
                                 valido = true;
-                                while (c >= a-diferenciaconectaFicha1 && d<= b+diferenciaconectaFicha1 ) {
+                                while (c >= a-diferenciaconectaFicha1 && d >= b-diferenciaconectaFicha1 ) {
                                     if(tablero[c][d] == Main.PLAYER1 || tablero[c][d] == Main.VACIO){
                                         contadorIzqArriba++;
                                         if (tablero[c][d] == Main.PLAYER1 || tablero[c][d] == Main.PLAYER2) {
@@ -472,22 +470,20 @@ public class MiniMaxRestrainedPlayer extends Player {
                                         }
                                     }
                                     c--;
-                                    d++;
+                                    d--;
                                 }
                                 if(contadorIzqArriba >= diferenciaconectaFicha1){
                                     if(ganar1 > valor1)valor1 = ganar1;
                                 }
                             }
 
-                            // Miramos hacia Izquierda Abajo
-                            if(a+diferenciaconectaFicha1 < Filas && b-diferenciaconectaFicha1 < COLUMNAS && tablero[a][b]==Main.PLAYER1){
-
+                            // Miramos hacia derecha Abajo
+                            if(a+diferenciaconectaFicha1 < Filas && b+diferenciaconectaFicha1 < COLUMNAS && tablero[a][b]==Main.PLAYER1){
                                 c=a+1;
-                                d=b-1;
-
+                                d=b+1;
                                 int contadorDerAbajo = 0;
                                 valido = true;
-                                while (c <= a+diferenciaconectaFicha1 && d >= b-diferenciaconectaFicha1 ) {
+                                while (c <= a+diferenciaconectaFicha1 && d <= b+diferenciaconectaFicha1 ) {
 
                                     if (tablero[c][d] == Main.PLAYER1 || tablero[c][d] == Main.VACIO) {
                                         contadorDerAbajo++;
@@ -500,7 +496,7 @@ public class MiniMaxRestrainedPlayer extends Player {
                                         }
                                     }
                                     c++;
-                                    d--;
+                                    d++;
                                 }
                                 if(contadorDerAbajo == diferenciaconectaFicha1){
                                     if(ganar1 > valor1)valor1 = ganar1;
@@ -591,8 +587,8 @@ public class MiniMaxRestrainedPlayer extends Player {
                                 if(ganar2 > valor2)valor2 = ganar2;
                             }
                         }
-
-                    }else {
+                     }
+                    else {
                         ganar1 = 0;
                         ganar2 = 0;
                     }
@@ -758,6 +754,15 @@ public class MiniMaxRestrainedPlayer extends Player {
      */
     @Override
     public int turno(Grid tablero, int conecta) {
+        int[][] tablero1 = {
+                {0, 0, 0, 0, 0, 0, -1 },
+                { 0, 0, 0, 0, 0, -1, 1 },
+                { 0, 0, 0, 0, -1, 1, -1 },
+                { 0, 0, 0, 0, 0, 0, 0},
+                { 0, 0, 0, 0,0 , 0, 0 },
+                { 0, 0, 0, 0, 0, 0, 0 }
+        };
+        Heuristica(tablero1);
 
         ///Creamos el nodo padre,con el nodo con el tablero actual
         Nodo nodoPadre = new Nodo(tablero);
