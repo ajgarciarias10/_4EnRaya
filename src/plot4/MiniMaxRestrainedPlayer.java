@@ -592,7 +592,7 @@ public class MiniMaxRestrainedPlayer extends Player {
                         ganar1 = 0;
                         ganar2 = 0;
                     }
-                    a++;
+                    a--;
                     b++;
                 }
             }
