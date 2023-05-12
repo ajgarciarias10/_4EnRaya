@@ -43,7 +43,7 @@ public class MiniMaxRestrainedPlayer extends Player {
          */
         int  ganar1;
         int  ganar2;
-        int vacio = 0;
+        int vacio ;
         /**
          *  Declaramos las variables
          * @ganar1 Valor maximo de fichas jugador 1
@@ -237,111 +237,371 @@ public class MiniMaxRestrainedPlayer extends Player {
                 }
             }
         }
-
-
         /**
-         * Comprobar Oblicuo Izquierda Derecha
+         * Bucle anidado para comprobar oblicuo. De izquierda a derecha
          */
         for (int i = 0; i < Filas; i++) {
             for (int j = 0; j < COLUMNAS; j++) {
                 int a = i;
                 int b = j;
-                vacio=0;
                 ganar1 = 0;
                 ganar2 = 0;
                 while (a < Filas && b < COLUMNAS) {
-                    //Si el numero de filas y columnas es menor o igual que el conecta
-                    //Vemos si es posible alcanzar el conecta 4 en lo que queda
-                    if(Filas - a < CONECTA || COLUMNAS -b <CONECTA){
-                        //Con mirar una de las longuitudes me basta
-                        int casillasRestantes = Filas-b ;
-                        if(tablero[a][b] == Main.VACIO){
-                            vacio++;
-                            if(vacio + ganar1 >=  CONECTA){
-                                if(ganar1>valor1){
-                                    valor1 = ganar1;
-                                }
+                    if (tablero[a][b] != Main.VACIO) {
+                        //Caso jugador 1
+                        /**
+                         * Comprobamos si hay fichas en la posicion oblicua:
+                         * [a][b] del jugador 1
+                         */
+                        if (tablero[a][b] == Main.PLAYER1) {
+                            ganar1++;
+                            //En caso de que no sean del jugador1
+                        }else{
+                            //Reiniciamos el valor del conteo de fichas
+                            ganar1 = 0;
 
-                            }
-                            if(vacio + ganar2 >= CONECTA){
-                                if(ganar2>valor2){
-                                    valor2 = ganar2;
+                        }
+                        //¿Ha ganado el jugador 1?
+                        if(ganar1 >= CONECTA){
+                            //Y Devolvemos el ganador
+                            return Main.PLAYER1;
+                        } else{
+                            boolean valido;
+                            int contadorEspaciosDerAbajo = 0;
+                            int contadorEspaciosIzqArriba = 0;
+                            int c;
+                            int d;
+                            //Hay que ver si hay posibilidad de poner mas fichas a la izquierda como a la derecha
+                            int diferenciaconectaFicha1 = CONECTA - ganar1;
+                            //Miramos hacia izq Arriba  <---
+                            if(a-(ganar1-1)-diferenciaconectaFicha1 >= 0 && b-(ganar1-1)-diferenciaconectaFicha1 >= 0 && tablero[a][b]==Main.PLAYER1){
+                                c=a-ganar1+1;
+                                d=b-ganar1+1;
+                                int contadorIzqArriba = 0;// entramos en el if si la fila o la columna es mayor que 0 al restar importante el "||"
+                                valido = true;
+                                while (c >= a-diferenciaconectaFicha1 && d >= b-diferenciaconectaFicha1 ) {
+                                    if(tablero[c][d] == Main.PLAYER1 || tablero[c][d] == Main.VACIO){
+                                        contadorIzqArriba++;
+                                        if (tablero[c][d] == Main.PLAYER1 || tablero[c][d] == Main.PLAYER2) {
+                                            valido = false;
+                                        }
+                                        if(tablero[c][d] == Main.VACIO && valido){
+                                            contadorEspaciosIzqArriba++;
+                                        }
+                                    }
+                                    c--;
+                                    d--;
                                 }
+                                if(contadorIzqArriba >= diferenciaconectaFicha1){
+                                    if(ganar1 > valor1)valor1 = ganar1;
+                                }
+                            }
+
+                            // Miramos hacia derecha Abajo
+                            if(a+diferenciaconectaFicha1 < Filas && b+diferenciaconectaFicha1 < COLUMNAS && tablero[a][b]==Main.PLAYER1){
+                                c=a+1;
+                                d=b+1;
+                                int contadorDerAbajo = 0;
+                                valido = true;
+                                while (c <= a+diferenciaconectaFicha1 && d <= b+diferenciaconectaFicha1 ) {
+
+                                    if (tablero[c][d] == Main.PLAYER1 || tablero[c][d] == Main.VACIO) {
+                                        contadorDerAbajo++;
+                                        if (tablero[c][d] == Main.PLAYER1 || tablero[c][d] == Main.PLAYER2) {
+                                            valido = false;
+                                        }
+
+                                        if (tablero[c][d] == Main.VACIO && valido) {
+                                            contadorEspaciosDerAbajo++;
+                                        }
+                                    }
+                                    c++;
+                                    d++;
+                                }
+                                if(contadorDerAbajo == diferenciaconectaFicha1){
+                                    if(ganar1 > valor1)valor1 = ganar1;
+                                }
+                            }
+
+                            if(ganar1+contadorEspaciosDerAbajo+contadorEspaciosIzqArriba >= CONECTA && tablero[a][b]==Main.PLAYER1){
+                                if(ganar1 > valor1)valor1 = ganar1;
                             }
                         }
+                        //En caso de que no haya ganado el jugador1 miramos el jugador 2
+                        /**
+                         * Comprobamos si hay fichas en la posicion horizontal:
+                         * [a][b] del jugador 2
+                         */
+                        if(tablero[a][b] == Main.PLAYER2){
+                            ganar2++;
+                        }
+                        //En caso de que no sean del jugador2
                         else{
-                            //Miramos las siguientes fichas
-                            if(deQueJugadorEs(tablero,a,b,false)){
-                                int valor = mirarsiguientesFichas(vacio,casillasRestantes,tablero,a,b,ganar1,true,"OID");
-                                if(valor == 1){
-                                    return Main.PLAYER1;
-                                } else if (valor >1) {
-                                    if(valor > valor1){
-                                        valor1 = valor;
-                                    }
-                                } else if (valor == 0) {
-                                    break;
-                                }
-
-                            }else{
-                                int valor = mirarsiguientesFichas(vacio,casillasRestantes,tablero,a,b,ganar2,false,"OID");
-                                if(valor == -1){
-                                    return Main.PLAYER2;
-                                } else if (valor >0) {
-                                    if(valor > valor2){
-                                        valor2 = valor;
-                                    }
-                                } else if (valor == 0) {
-                                    break;
-                                }
-                            }
+                            ganar2 = 0;
                         }
-
-
-                    }
-
-                    else{
-                        //Si el tablero no esta vacio
-                        if (tablero[a][b] != Main.VACIO) {
-                            //Comprobamos que jugador es
-                            if(deQueJugadorEs(tablero,a,b,false)){
-                                //Si es 1 sumamos una pieza
-                                ganar1++;
-                                ganar2 =0 ;
-                                //Comprobamos si con el vacio puede ganar
-                                if(ganar1 + vacio >= CONECTA && ganar1>valor1) {
-                                    valor1 = ganar1;
+                        //¿Ha ganado el jugador 2?
+                        if(ganar2 >= CONECTA){
+                            //Y Devolvemos el ganador
+                            return Main.PLAYER2;
+                        }else{
+                            if(a==5 && b==3){
+                                int dfj=0;
+                            }
+                            boolean valido = true;
+                            int contadorEspaciosDerAbajo = 0;
+                            int contadorEspaciosIzqArriba = 0;
+                            int c=a;
+                            int d=b;
+                            //Hay que ver si hay posibilidad de poner mas fichas a la izquierda como a la derecha
+                            int diferenciaconectaFicha2 = CONECTA - ganar2;
+                            //Miramos hacia izq Arriba  <---
+                            if(a-(ganar2-1)-diferenciaconectaFicha2 >= 0 && b-(ganar2-1)-diferenciaconectaFicha2 >= 0 && tablero[a][b]==Main.PLAYER2){
+                                c=a-ganar2+1;
+                                d=b-ganar2+1;
+                                int contadorIzqArriba = 0;// entramos en el if si la fila o la columna es mayor que 0 al restar importante el "||"
+                                valido = true;
+                                while (c >= a-diferenciaconectaFicha2 && d >= b-diferenciaconectaFicha2 ) {
+                                    if(tablero[c][d] == Main.PLAYER2 || tablero[c][d] == Main.VACIO){
+                                        contadorIzqArriba++;
+                                        if (tablero[c][d] == Main.PLAYER1 || tablero[c][d] == Main.PLAYER2) {
+                                            valido = false;
+                                        }
+                                        if(tablero[c][d] == Main.VACIO && valido){
+                                            contadorEspaciosIzqArriba++;
+                                        }
+                                    }
+                                    c--;
+                                    d--;
                                 }
-                                //Comprobamos si ha ganado ya el jugador
-                                if(jugadorHaGanado(ganar1)){
-                                    return  Main.PLAYER1;
-                                }
-                            }else{
-                                ganar2++;
-                                ganar1 = 0;
-                                //Comprobamos si con el vacio puede ganar
-                                if(ganar2 + vacio >= CONECTA && ganar2>valor2) {
-                                    valor2 = ganar2;
-                                }
-                                //Comprobamos si ha ganado ya el jugador
-                                if(jugadorHaGanado(ganar2)){
-                                    return  Main.PLAYER2;
+                                if(contadorIzqArriba >= diferenciaconectaFicha2){
+                                    if(ganar2 > valor2)valor2 = ganar2;
                                 }
                             }
 
-                        } else {
-                            vacio++;
-                        }
-                    }
+                            // Miramos hacia derecha Abajo
+                            if(a+diferenciaconectaFicha2 < Filas && b+diferenciaconectaFicha2 < COLUMNAS && tablero[a][b]==Main.PLAYER2){
+                                c=a+1;
+                                d=b+1;
+                                int contadorDerAbajo = 0;
+                                valido = true;
+                                while (c <= a+diferenciaconectaFicha2 && d <= b+diferenciaconectaFicha2 ) {
 
+                                    if (tablero[c][d] == Main.PLAYER2 || tablero[c][d] == Main.VACIO) {
+                                        contadorDerAbajo++;
+                                        if (tablero[c][d] == Main.PLAYER1 || tablero[c][d] == Main.PLAYER2) {
+                                            valido = false;
+                                        }
+                                        if (tablero[c][d] == Main.VACIO && valido) {
+                                            contadorEspaciosDerAbajo++;
+                                        }
+                                    }
+                                    c++;
+                                    d++;
+                                }
+                                if(contadorDerAbajo == diferenciaconectaFicha2){
+                                    if(ganar2 > valor2)valor2 = ganar2;
+                                }
+                            }
+
+                            if(ganar2+contadorEspaciosDerAbajo+contadorEspaciosIzqArriba >= CONECTA && tablero[a][b]==Main.PLAYER2){
+                                if(ganar2 > valor2)valor2 = ganar2;
+                            }
+                        }
+
+                    }else {
+                        ganar1 = 0;
+                        ganar2 = 0;
+                    }
+                    a++;
+                    b++;
+                }
+       }
+}
+        /**
+         * Bucle anidado para comprobar oblicuo. De derecha  a izquierda
+         */
+        for (int i = 0; i < Filas; i++) {
+            for (int j = 0; j < COLUMNAS; j++) {
+                int a = i;
+                int b = j;
+                ganar1 = 0;
+                ganar2 = 0;
+                while (a >= Filas && b < COLUMNAS) {
+                    if (tablero[a][b] != Main.VACIO) {
+                        //Caso jugador 1
+                        /**
+                         * Comprobamos si hay fichas en la posicion oblicua:
+                         * [a][b] del jugador 1
+                         */
+                        if (tablero[a][b] == Main.PLAYER1) {
+                            ganar1++;
+                            //En caso de que no sean del jugador1
+                        }else{
+                            //Reiniciamos el valor del conteo de fichas
+                            ganar1 = 0;
+
+                        }
+                        //¿Ha ganado el jugador 1?
+                        if(ganar1 >= CONECTA){
+                            //Y Devolvemos el ganador
+                            return Main.PLAYER1;
+                        } else{
+                            boolean valido;
+                            //Izquierda Abajo
+                            int contadorEspaciosDerAbajo = 0;
+                            //Derecha Arriba
+                            int contadorEspaciosIzqArriba = 0;
+                            int c;
+                            int d;
+                            //Hay que ver si hay posibilidad de poner mas fichas a la izquierda como a la derecha
+                            int diferenciaconectaFicha1 = CONECTA - ganar1;
+                            //Miramos hacia Derecha Arriba  <---
+                            if(a-(ganar1-1)-diferenciaconectaFicha1 <= 0 && b-(ganar1-1)-diferenciaconectaFicha1 < COLUMNAS && tablero[a][b]==Main.PLAYER1){
+                                c=a-ganar1-1;
+                                d=b-ganar1+1;
+                                int contadorIzqArriba = 0;// entramos en el if si la fila o la columna es mayor que 0 al restar importante el "||"
+                                valido = true;
+                                while (c >= a-diferenciaconectaFicha1 && d<= b+diferenciaconectaFicha1 ) {
+                                    if(tablero[c][d] == Main.PLAYER1 || tablero[c][d] == Main.VACIO){
+                                        contadorIzqArriba++;
+                                        if (tablero[c][d] == Main.PLAYER1 || tablero[c][d] == Main.PLAYER2) {
+                                            valido = false;
+                                        }
+                                        if(tablero[c][d] == Main.VACIO && valido){
+                                            contadorEspaciosIzqArriba++;
+                                        }
+                                    }
+                                    c--;
+                                    d++;
+                                }
+                                if(contadorIzqArriba >= diferenciaconectaFicha1){
+                                    if(ganar1 > valor1)valor1 = ganar1;
+                                }
+                            }
+
+                            // Miramos hacia Izquierda Abajo
+                            if(a+diferenciaconectaFicha1 < Filas && b-diferenciaconectaFicha1 < COLUMNAS && tablero[a][b]==Main.PLAYER1){
+
+                                c=a+1;
+                                d=b-1;
+
+                                int contadorDerAbajo = 0;
+                                valido = true;
+                                while (c <= a+diferenciaconectaFicha1 && d >= b-diferenciaconectaFicha1 ) {
+
+                                    if (tablero[c][d] == Main.PLAYER1 || tablero[c][d] == Main.VACIO) {
+                                        contadorDerAbajo++;
+                                        if (tablero[c][d] == Main.PLAYER1 || tablero[c][d] == Main.PLAYER2) {
+                                            valido = false;
+                                        }
+
+                                        if (tablero[c][d] == Main.VACIO && valido) {
+                                            contadorEspaciosDerAbajo++;
+                                        }
+                                    }
+                                    c++;
+                                    d--;
+                                }
+                                if(contadorDerAbajo == diferenciaconectaFicha1){
+                                    if(ganar1 > valor1)valor1 = ganar1;
+                                }
+                            }
+
+                            if(ganar1+contadorEspaciosDerAbajo+contadorEspaciosIzqArriba >= CONECTA && tablero[a][b]==Main.PLAYER1){
+                                if(ganar1 > valor1)valor1 = ganar1;
+                            }
+                        }
+                        //En caso de que no haya ganado el jugador1 miramos el jugador 2
+                        /**
+                         * Comprobamos si hay fichas en la posicion horizontal:
+                         * [a][b] del jugador 2
+                         */
+                        if(tablero[a][b] == Main.PLAYER2){
+                            ganar2++;
+                        }
+                        //En caso de que no sean del jugador2
+                        else{
+                            ganar2 = 0;
+                        }
+                        //¿Ha ganado el jugador 2?
+                        if(ganar2 >= CONECTA){
+                            //Y Devolvemos el ganador
+                            return Main.PLAYER2;
+                        }else{
+                            if(a==5 && b==3){
+                                int dfj=0;
+                            }
+                            boolean valido = true;
+                            int contadorEspaciosDerAbajo = 0;
+                            int contadorEspaciosIzqArriba = 0;
+                            int c=a;
+                            int d=b;
+                            //Hay que ver si hay posibilidad de poner mas fichas a la izquierda como a la derecha
+                            int diferenciaconectaFicha2 = CONECTA - ganar2;
+                            //Miramos hacia izq Arriba  <---
+                            if(a-(ganar2-1)-diferenciaconectaFicha2 >= 0 && b-(ganar2-1)-diferenciaconectaFicha2 >= 0 && tablero[a][b]==Main.PLAYER2){
+                                c=a-ganar2+1;
+                                d=b-ganar2+1;
+                                int contadorIzqArriba = 0;// entramos en el if si la fila o la columna es mayor que 0 al restar importante el "||"
+                                valido = true;
+                                while (c >= a-diferenciaconectaFicha2 && d >= b-diferenciaconectaFicha2 ) {
+                                    if(tablero[c][d] == Main.PLAYER2 || tablero[c][d] == Main.VACIO){
+                                        contadorIzqArriba++;
+                                        if (tablero[c][d] == Main.PLAYER1 || tablero[c][d] == Main.PLAYER2) {
+                                            valido = false;
+                                        }
+                                        if(tablero[c][d] == Main.VACIO && valido){
+                                            contadorEspaciosIzqArriba++;
+                                        }
+                                    }
+                                    c--;
+                                    d--;
+                                }
+                                if(contadorIzqArriba >= diferenciaconectaFicha2){
+                                    if(ganar2 > valor2)valor2 = ganar2;
+                                }
+                            }
+
+                            // Miramos hacia derecha Abajo
+                            if(a+diferenciaconectaFicha2 < Filas && b+diferenciaconectaFicha2 < COLUMNAS && tablero[a][b]==Main.PLAYER2){
+                                c=a+1;
+                                d=b+1;
+                                int contadorDerAbajo = 0;
+                                valido = true;
+                                while (c <= a+diferenciaconectaFicha2 && d <= b+diferenciaconectaFicha2 ) {
+
+                                    if (tablero[c][d] == Main.PLAYER2 || tablero[c][d] == Main.VACIO) {
+                                        contadorDerAbajo++;
+                                        if (tablero[c][d] == Main.PLAYER1 || tablero[c][d] == Main.PLAYER2) {
+                                            valido = false;
+                                        }
+                                        if (tablero[c][d] == Main.VACIO && valido) {
+                                            contadorEspaciosDerAbajo++;
+                                        }
+                                    }
+                                    c++;
+                                    d++;
+                                }
+                                if(contadorDerAbajo == diferenciaconectaFicha2){
+                                    if(ganar2 > valor2)valor2 = ganar2;
+                                }
+                            }
+
+                            if(ganar2+contadorEspaciosDerAbajo+contadorEspaciosIzqArriba >= CONECTA && tablero[a][b]==Main.PLAYER2){
+                                if(ganar2 > valor2)valor2 = ganar2;
+                            }
+                        }
+
+                    }else {
+                        ganar1 = 0;
+                        ganar2 = 0;
+                    }
                     a++;
                     b++;
                 }
             }
         }
 
-
-        System.out.println(valor1 + " " + valor2);
         return  determinarGanador(valor1,valor2);
 
     }
@@ -437,53 +697,7 @@ public class MiniMaxRestrainedPlayer extends Player {
                 }
             }
         }
-       else if(modo.equals("OID")) {
-            //region Modo horizontal
-            //region Caso Jugador 1
-            if (jugador) {
-                    //Realizamos un bucle hasta que se acaben las fichas restantes
-                    for (int k = 0; k < casillasRestantes; k++) {
-                        if(i+k != Filas && j+k !=COLUMNAS) {
-                            //Miramos de que jugador es
-                            if (deQueJugadorEs(tablero, i + k, j + k, false)) {
-                                ganar++;
-                                if (jugadorHaGanado(ganar)) {
-                                    return Main.PLAYER1;
-                                }
-                                if (vacio + ganar >= CONECTA) {
-                                    return ganar;
-                                }
-                            } else {
-                                return 0;
-                            }
-                        }
-                        else{
-                            break;
-                        }
-                    }
-            } else {
-                for (int k = 0; k < casillasRestantes; k++) {
-                    if(i+k != Filas && j+k !=COLUMNAS) {
-                        //Miramos de que jugador es
-                        int columna = j + k;
-                        if (!deQueJugadorEs(tablero, i + k, columna, false)) {
-                            ganar++;
-                            if (jugadorHaGanado(ganar)) {
-                                return Main.PLAYER2;
-                            }
-                            if (vacio + ganar >= CONECTA) {
-                                return ganar;
-                            }
-                        } else {
-                            return 0;
-                        }
-                    }else{
-                        break;
-                    }
 
-                }
-            }
-        }
 
         //endregion
         //endregion
