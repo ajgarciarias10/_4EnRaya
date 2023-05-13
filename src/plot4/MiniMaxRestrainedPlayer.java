@@ -564,6 +564,13 @@ public class MiniMaxRestrainedPlayer extends Player {
 
     }
 
+    /**
+     * Metodo heurisitico para determinar el ganador toma el valor1 y lo resta a valor 2
+     * En funcion de si es menor o mayor  de 0 sera 1 u otro
+     * @param valor1
+     * @param valor2
+     * @return
+     */
     private int determinarGanador(int valor1,int valor2) {
         int heuristica = valor1-valor2;
         if(heuristica>0){
@@ -714,7 +721,17 @@ public class MiniMaxRestrainedPlayer extends Player {
         return  0;
 
     }
-
+    /**
+     * Metodo utilizado para calcular los oblicuos
+     * @param vacio
+     * @param tablero
+     * @param i
+     * @param j
+     * @param ganar
+     * @param jugador
+     * @param dI
+     * @return
+     */
     private int oblicuo(int vacio, int[][] tablero, int i, int j, int ganar, boolean jugador, boolean dI) {
         int valor= 0;
         if(dI){
@@ -770,8 +787,6 @@ public class MiniMaxRestrainedPlayer extends Player {
                     return  valor;
 
             }
-
-        }else{
 
         }
         return  0;
@@ -1026,6 +1041,9 @@ public class MiniMaxRestrainedPlayer extends Player {
 
         public ArrayList<Nodo> getHijos() {
             return hijos;
+        }
+        public void eliminarHijo(Nodo hijo) {
+            this.hijos.remove(hijo);
         }
 
 

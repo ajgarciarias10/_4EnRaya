@@ -163,15 +163,7 @@ public class MiniMaxPlayer extends Player {
         }
     }
 
-    /**
-     * Metodo que obtenemos todos los hijos hasta llegar al nodo hoja
-     * @param nodo
-     * @param esMax
-     */
-    private void llegarANodoHoja(Nodo nodo,boolean esMax) {
 
-
-    }
 
     /**
      * Metodo encontrar movimiento le pasamos el tablero padre y el tablero hijo y obtenemos el movimiento
