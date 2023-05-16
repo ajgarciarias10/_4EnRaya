@@ -22,12 +22,12 @@ import java.util.ArrayList;
  */
 public class MiniMaxRestrainedPlayer extends Player {
 
-    private  final int PROFUNDIDAD = 6;
+    private  final int PROFUNDIDAD = 5;
 
-    private  final int CONECTA = 4;
-    private  final int Filas = 6;
+    private  final int CONECTA = 3;
+    private  final int Filas = 3;
 
-    private  final int COLUMNAS = 7;
+    private  final int COLUMNAS = 3;
     /**
      *  Funcion heuristica
      * @param tablero
@@ -372,14 +372,11 @@ public class MiniMaxRestrainedPlayer extends Player {
                             //Y Devolvemos el ganador
                             return Main.PLAYER2;
                         }else{
-                            if(a==5 && b==3){
-                                int dfj=0;
-                            }
-                            boolean valido = true;
+                            boolean valido;
                             int contadorEspaciosDerAbajo = 0;
                             int contadorEspaciosIzqArriba = 0;
-                            int c=a;
-                            int d=b;
+                            int c;
+                            int d;
                             //Hay que ver si hay posibilidad de poner mas fichas a la izquierda como a la derecha
                             int diferenciaconectaFicha2 = CONECTA - ganar2;
                             //Miramos hacia izq Arriba  <---
@@ -572,13 +569,7 @@ public class MiniMaxRestrainedPlayer extends Player {
      * @return
      */
     private int determinarGanador(int valor1,int valor2) {
-        int heuristica = valor1-valor2;
-        if(heuristica>0){
-            return  1;
-        }else if(heuristica<0){
-            return  -1;
-        }
-        return 0;
+        return (valor1*valor1)-(valor2*valor2);
     }
 
     /**
@@ -711,10 +702,7 @@ public class MiniMaxRestrainedPlayer extends Player {
         else if (modo.equals("OD")) {
            return oblicuo(vacio,tablero,i ,j,ganar,jugador,true);
         }
-        //Modo Oblicuo Izquierda  Derecha
-        else if (modo.equals("OI")) {
-            return oblicuo(vacio,tablero,i ,j,ganar,jugador,false);
-        }
+
 
         //endregion
         //endregion
@@ -863,8 +851,16 @@ public class MiniMaxRestrainedPlayer extends Player {
                  { 0, -1, -1, 1, -1 , 1, 0 },
                  { -1, 1, 1, 1, -1, -1, 0 }
         };
+
+
+        int[][] tablero1 = {
+                {1, 0, 0, },
+                { -1, 1, 0},
+                { 1, -1, 0},
+        };
+        int valor = Heuristica(tablero1);
        return Heuristica(tablero1);
-          */
+ */
 
         ///Creamos el nodo padre,con el nodo con el tablero actual
         Nodo nodoPadre = new Nodo(tablero);
@@ -872,10 +868,10 @@ public class MiniMaxRestrainedPlayer extends Player {
         Minimax(nodoPadre,-1, PROFUNDIDAD);
         //Una vez creado el arbol, aplicamos nuestro metodo de evaluación
         //Para ir pasando los valores obtenidos hacia atras hasta llegar al nodo raiz (nodo min)
-        evaluar(nodoPadre,false);
+       evaluar(nodoPadre,false);
         //imprimirNodo(nodoPadre, ""); // Función que dibuja el arbol al completo
         //Sacamos todos los hijos del arraylist que tenemos
-        ArrayList<Nodo> hijos = nodoPadre.getHijos();
+       ArrayList<Nodo> hijos = nodoPadre.getHijos();
         //Incializamos un nodo que va a ser el movimiento
         Nodo movimiento = null;
         for (Nodo hijo : hijos) {
