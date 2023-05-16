@@ -4,8 +4,11 @@
  * and open the template in the editor.
  */
 package plot4;
-import java.util.ArrayList;
 
+import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
+import java.util.Iterator;
+import java.util.Random;
 
 /**
  *
@@ -23,15 +26,15 @@ import java.util.ArrayList;
  */
 
 public class AlfaBetaPlayer extends Player {
-    private  int alpha = Integer.MIN_VALUE;
+    private  int alpha = -1000;
 
-    private final int beta=  Integer.MAX_VALUE;
-    private  final int PROFUNDIDAD = 2;
+    private  int beta=  1000;
+    private  final int PROFUNDIDAD = 5;
 
-    private  final int CONECTA = 3;
-    private  final int Filas = 3;
+    private  final int CONECTA = 4;
+    private  final int Filas = 6;
 
-    private  final int COLUMNAS = 3;
+    private  final int COLUMNAS = 7;
 
     /**
      * Metodos a utilizar en esta practica
@@ -46,9 +49,9 @@ public class AlfaBetaPlayer extends Player {
      * @return
      */
     private int determinarGanador(int valor1,int valor2) {
-        return (valor1*valor1)-(valor2*valor2);
+        int heuristica = (valor1*valor1)-(valor2*valor2);
+        return heuristica;
     }
-
 
     /**
      * Metodo que verifica a partir del tablero de que color es la ficha que hay
@@ -86,7 +89,6 @@ public class AlfaBetaPlayer extends Player {
         return 0;
     }
 
-
     /**
      * Metodo encontrar movimiento le pasamos el tablero padre y el tablero hijo y obtenemos el movimiento
      * @param tableropadre
@@ -94,16 +96,16 @@ public class AlfaBetaPlayer extends Player {
      * @return
      */
     public static int encontrarMovimiento(int[][] tableropadre, int[][] tablerohijo) {
-        int filas = tableropadre.length;
-        int columnas = tableropadre[0].length;
-        for (int i = 0; i < filas; i++) {
-            for (int j = 0; j < columnas; j++) {
+        int Filas = tableropadre.length;
+        int COLUMNAS = tableropadre[0].length;
+        for (int i = 0; i < Filas; i++) {
+            for (int j = 0; j < COLUMNAS; j++) {
                 if (tableropadre[i][j] != tablerohijo[i][j]) {
                     return j; // devolver posición de la celda diferente
                 }
             }
         }
-        return -1; // si no hay celdas diferentes, devolver valor indicativo de ningún movimiento
+        return 0; // si no hay celdas diferentes, devolver null
     }
     /**
      *  Funcion heuristica
@@ -111,8 +113,6 @@ public class AlfaBetaPlayer extends Player {
      * @return
      */
     public  int Heuristica(int tablero[][]){
-
-
         /**
          *  Declaramos las variables
          * @ganar1 variable para jugador 1 utilizado en bucle para obtener fichas jugador 1
@@ -130,10 +130,7 @@ public class AlfaBetaPlayer extends Player {
         int valor2 = 0;
 
 
-        /**
-         * Comprobar horizontal
-         */
-
+        //Comprobamos horizontal
         for (int i = 0; (i < Filas); i++) {
             vacio=0;
             ganar1 = 0;
@@ -236,11 +233,7 @@ public class AlfaBetaPlayer extends Player {
                 }
             }
         }
-
-        /**
-         * Comprobar Vertical
-         */
-
+        // Comprobamos vertical
         for (int i = 0; (i < COLUMNAS); i++) {
             vacio=0;
             ganar1 = 0;
@@ -342,9 +335,7 @@ public class AlfaBetaPlayer extends Player {
             }
         }
 
-        /**
-         * Bucle anidado para comprobar oblicuo. De izquierda a derecha
-         */
+        // Comprobamos oblicuo de izquierda a derecha
         for (int i = 0; i < Filas; i++) {
             for (int j = 0; j < COLUMNAS; j++) {
                 int a = i;
@@ -449,14 +440,12 @@ public class AlfaBetaPlayer extends Player {
                             //Y Devolvemos el ganador
                             return Main.PLAYER2;
                         }else{
-                            if(a==5 && b==3){
-                                int dfj=0;
-                            }
+
                             boolean valido = true;
                             int contadorEspaciosDerAbajo = 0;
                             int contadorEspaciosIzqArriba = 0;
-                            int c=a;
-                            int d=b;
+                            int c;
+                            int d;
                             //Hay que ver si hay posibilidad de poner mas fichas a la izquierda como a la derecha
                             int diferenciaconectaFicha2 = CONECTA - ganar2;
                             //Miramos hacia izq Arriba  <---
@@ -523,9 +512,7 @@ public class AlfaBetaPlayer extends Player {
             }
         }
 
-        /**
-         * Bucle anidado para comprobar oblicuo. De derecha  a izquierda
-         */
+        // Comprobamos oblicuo de derecha a izquierda
         for (int i = Filas - 1; i >=0; i--) {
             for (int j = 0; j < COLUMNAS; j++) {
                 int a = i;
@@ -656,6 +643,7 @@ public class AlfaBetaPlayer extends Player {
             imprimirNodo(hijos.get(numHijos - 1), espacio + "    ");
         }
     }
+
     /**
      * Metodo que verifica a partir numerodeFichas de un jugador si ha ganado o no
      * @param numerodeFichas
@@ -670,33 +658,6 @@ public class AlfaBetaPlayer extends Player {
             valor = false;
         }
         return valor;
-    }
-    /**
-     * Metodo que genera el arbol minimax.
-     * @param nodo
-     * @param jugador
-     */
-    public void Minimax(Nodo nodo, int jugador, int profundidad) {
-        // Obtener el tablero del nodo actual
-        Grid tableroactual = nodo.getTablero();
-        // Comprobar si el juego  ha llegado a un estado final
-        //Vemos si el estado final  es  o -1(gana min) o 1(gana max)
-        if (profundidad == 0) {
-            int estadoganador = Heuristica(tableroactual.getGrid());
-            // Asignar un valor de utilidad en función del resultado del juego
-            nodo.setValor(estadoganador);
-            //Nos salimos de la funcion min max
-            return;
-        }
-        //Si el jugador es min
-        if (jugador == -1) {
-            //Aplicamos la recursividad para ir creando un arbol
-            recursividad(nodo,jugador,tableroactual, profundidad - 1);
-            //Si el jugador es Max
-        } else {
-            //Aplicamos la recursividad para ir creando un arbol
-            recursividad(nodo,jugador,tableroactual, profundidad -1);
-        }
     }
 
     /**
@@ -829,7 +790,10 @@ public class AlfaBetaPlayer extends Player {
         else if (modo.equals("OD")) {
             return oblicuo(vacio,tablero,i ,j,ganar,jugador,true);
         }
-
+        //Modo Oblicuo Izquierda  Derecha
+        else if (modo.equals("OI")) {
+            return oblicuo(vacio,tablero,i ,j,ganar,jugador,false);
+        }
 
         //endregion
         //endregion
@@ -925,43 +889,6 @@ public class AlfaBetaPlayer extends Player {
     }
 
     /**
-     * Metodo que por cada columna libre, crea hijos en el arbol.
-     * @param nodopadre
-     * @param jugador
-     * @param tableroactual
-     */
-
-    private void recursividad(Nodo nodopadre, int jugador, Grid tableroactual, int profundidad) {
-        //Bucle que recorre todas las COLUMNAS
-        for (int col = 0; col < tableroactual.getColumnas(); col++) {
-            // Comprobamos si la columna está llena
-            if (tableroactual.fullColumn(col)) {
-                continue;
-            }
-            //Almacenamos un tableroHijo a partir del tablero actual
-            Grid tableroHijo = new Grid(tableroactual);
-            //Utilizamos el metodo set para que coloque la columna libre en el tablero
-            tableroHijo.set(col,jugador);
-            //Creamos el nodo Hijo
-            Nodo nodoHijo = new Nodo(tableroHijo);
-            //Lo añadimos a lista de hijo
-            nodopadre.addHijos(nodoHijo);
-            //Si el jugador es min
-            if(jugador==-1){
-                //ahora pasa a ser max
-                Minimax(nodoHijo, 1, profundidad);
-            }
-            //Si el jugado es max
-            else{
-                //ahora pasa a ser min
-                Minimax(nodoHijo, -1, profundidad);
-            }
-
-        }
-
-    }
-
-    /**
      * @brief funcion que determina donde colocar la ficha este turno
      * @param tablero Tablero de juego
      * @param conecta Número de fichas consecutivas adyacentes necesarias para
@@ -972,101 +899,31 @@ public class AlfaBetaPlayer extends Player {
     public int turno(Grid tablero, int conecta) {
         ///Creamos el nodo padre,con el nodo con el tablero actual
         Nodo nodoPadre = new Nodo(tablero);
-        //Llamamos al metodo  minimax para que nos genere el arbol al ser la maquina min pasamos jugador min
-        Minimax(nodoPadre,-1, PROFUNDIDAD);
-        alphaBeta(nodoPadre,PROFUNDIDAD,alpha,beta,false);
-        imprimirNodo(nodoPadre," ");
+
+        podaAlphaBeta(nodoPadre,PROFUNDIDAD,alpha,beta,false);
+        //imprimirNodo(nodoPadre, ""); // Función que dibuja el arbol al completo
+
         //Sacamos todos los hijos del arraylist que tenemos
         ArrayList<Nodo> hijos = nodoPadre.getHijos();
         //Incializamos un nodo que va a ser el movimiento
         Nodo movimiento = null;
+        ArrayList<Nodo> posiblesMovimientos = new ArrayList<>();
         for (Nodo hijo : hijos) {
             //Recoremos la lista de hijos
             if (nodoPadre.getValor() == hijo.getValor()) {
                 //Obtenemos el movimiento
                 movimiento = hijo;
+                posiblesMovimientos.add(movimiento);
             }
         }
+        // Elegimos uno de los movimientos de manera aleatoria
+        Random random = new Random();
+        int numeroRandom = random.nextInt((posiblesMovimientos.size()-1) - 0 + 1) + 0;
 
         //Devolvemos la posicion del movimiento
-        return encontrarMovimiento(nodoPadre.getTablero().getGrid(), movimiento.getTablero().getGrid());
-
-
+        return encontrarMovimiento(nodoPadre.getTablero().getGrid(), posiblesMovimientos.get(numeroRandom).getTablero().getGrid());
 
     } // turno
-
-
-    /**
-     * Poda Alpha Beta
-     * @param
-     * @param profundidad
-     * @param alpha
-     * @param beta
-     * @param jugador
-     *
-     *
-     *
-     * Pseudocodigo :
-     *
-     * función alfa-beta(nodo //en nuestro caso el tablero, profundidad, α, β, jugador)
-     *     si nodo es un nodo terminal o profundidad = 0
-     *         devolver el valor heurístico del nodo
-     *     si jugador1
-     *         para cada hijo de nodo
-     *             α := max(α, alfa-beta(hijo, profundidad-1, α, β, jugador2))
-     *             si β≤α
-     *                 romper (* poda β *)
-     *         devolver α
-     *     si no
-     *         para cada hijo de nodo
-     *             β := min(β, alfa-beta(hijo, profundidad-1, α, β, jugador1))
-     *             si β≤α
-     *                 romper (* poda α *)
-     *         devolver β
-     */
-
-    public int alphaBeta(Nodo nodo, int profundidad, int alpha, int beta, boolean jugador) {
-
-        if (nodo.getHijos().isEmpty() || profundidad == 0) {
-            return nodo.getValor();
-        }
-
-        //Caso de que sea Max
-        if(jugador){
-            for (Nodo hijo: nodo.getHijos()) {
-                int valorHijo = alphaBeta(hijo,profundidad-1,alpha,beta,false);
-                if(valorHijo > alpha){
-                    alpha = valorHijo;
-                }
-
-                if(beta <= alpha){
-                    break;
-                }
-            }
-            nodo.setValor(alpha);
-            return alpha;
-
-        }
-        //Caso de que sea min
-        else{
-            for (Nodo hijo: nodo.getHijos()) {
-                int valorHijo = alphaBeta(hijo,profundidad-1,alpha,beta,true);
-                if(valorHijo < beta){
-                    beta = valorHijo;
-                }
-
-                if(beta <= alpha){
-                    break;
-                }
-            }
-            nodo.setValor(beta);
-            return beta;
-
-        }
-
-    }
-
-
 
 
     public class Nodo {
@@ -1102,6 +959,81 @@ public class AlfaBetaPlayer extends Player {
 
         public void addHijos(Nodo hijo){
             this.hijos.add(hijo);
+        }
+    }
+
+
+    public void generarHijos(Nodo nodo,int jugador) {
+        Grid tablero = nodo.getTablero();
+
+        // Generar hijos para todas las posibles columnas
+        for (int col = 0; col < tablero.getColumnas(); col++) {
+            // Comprobar si la columna está llena
+            if (tablero.fullColumn(col)) {
+                continue;
+            }
+
+            // Clonar el tablero actual
+            Grid tableroHijo = new Grid(tablero);
+            // Realizamos el movimiento
+            tableroHijo.set(col,jugador);
+            //Creamos el nodo Hijo
+            Nodo nodoHijo = new Nodo(tableroHijo);
+            //Añadimos el hijo al padre
+            nodo.addHijos(nodoHijo);
+
+        }
+    }
+
+
+    public int podaAlphaBeta(Nodo nodo, int profundidad, int alfa, int beta, boolean Max) {
+
+        if (profundidad == 0 || nodo.getTablero().checkWin() != 0) {  // Si llegamos a la profundidad o hay algún ganador
+            if (nodo.getTablero().checkWin() != 0) {  // Si hay ganador
+                nodo.setValor(nodo.getTablero().checkWin());  // Guardamos el ganador y lo devolvemos
+                return nodo.getValor();
+            } else { // Sino calculamos valor heuristico
+                nodo.setValor(Heuristica(nodo.getTablero().getGrid())); // Generamos el valor heuristico y lo devolvemos
+                return nodo.getValor();
+            }
+        }
+
+        if (Max) {  // Si es MAX
+            generarHijos(nodo, 1);  //Generar hijos del nodo actual
+
+            for (Nodo hijo : nodo.getHijos()) {
+                int valor = podaAlphaBeta(hijo, profundidad - 1, alfa, beta, false);
+                alfa = Math.max(alfa, valor);
+                if (beta <= alfa) {
+                    // Poda alfa-beta
+                    for (int i = nodo.getHijos().indexOf(hijo) + 1; i < nodo.getHijos().size(); i++) {
+                        Nodo hijoRestante = nodo.getHijos().get(i);
+                        nodo.eliminarHijos(hijoRestante); // Eliminar los hijos restantes
+                    }
+                    break;
+                }
+            }
+
+            nodo.setValor(alfa);  // Guardamos el valor de alfa
+            return alfa;  // Devolvemos alfa
+        } else {   // Si es MIN
+            generarHijos(nodo, -1); // Generar los hijos del nodo actual
+
+            for (Nodo hijo : nodo.getHijos()) {
+                int valor = podaAlphaBeta(hijo, profundidad - 1, alfa, beta, true);
+                beta = Math.min(beta, valor);
+
+                if (alfa >= beta) {
+                    // Realizamos la poda
+                    for (int i = nodo.getHijos().indexOf(hijo) + 1; i < nodo.getHijos().size(); i++) {
+                        Nodo hijoRestante = nodo.getHijos().get(i);
+                        nodo.eliminarHijos(hijoRestante); // Eliminar los hijos restantes
+                    }
+                    break;
+                }
+            }
+            nodo.setValor(beta); // Guardamos el valor de beta
+            return beta; // Devolvemos Beta
         }
     }
 }

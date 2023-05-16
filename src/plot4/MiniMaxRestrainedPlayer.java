@@ -35,7 +35,7 @@ public class MiniMaxRestrainedPlayer extends Player {
      */
     public  int Heuristica(int tablero[][]){
 
-
+    //region Calculo de Fichas
         /**
          *  Declaramos las variables
          * @ganar1 variable para jugador 1 utilizado en bucle para obtener fichas jugador 1
@@ -80,7 +80,8 @@ public class MiniMaxRestrainedPlayer extends Player {
                                 valor2 = ganar2;
                             }
                         }
-                    }else{
+                    }
+                    else{
                         if(vacio + ganar1 >=  CONECTA){
                             if(ganar1>valor1){
                                 valor1 = ganar1;
@@ -133,7 +134,7 @@ public class MiniMaxRestrainedPlayer extends Player {
                             ganar1++;
                             ganar2 =0 ;
                             //Comprobamos si con el vacio puede ganar
-                            if(ganar1 + vacio >= CONECTA && ganar1>valor1) {
+                            if(vacio + ganar1 >= CONECTA && ganar1>valor1) {
                                 valor1 = ganar1;
                             }
                             //Comprobamos si ha ganado ya el jugador
@@ -547,15 +548,16 @@ public class MiniMaxRestrainedPlayer extends Player {
                         } else {
                             vacio++;
                         }
-                    }   
-                    
-                    
-                    
+                    }
+
+
+
                     a--;
                     b++;
                 }
             }
         }
+//endregion
 
         return  determinarGanador(valor1,valor2);
 
