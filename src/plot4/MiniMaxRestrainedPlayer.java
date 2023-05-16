@@ -594,7 +594,7 @@ public class MiniMaxRestrainedPlayer extends Player {
                     if (deQueJugadorEs(tablero, i, columna, false) == 1) {
                         ganar++;
                         if (jugadorHaGanado(ganar)) {
-                            return 4;
+                            return ganar;
                         }
                         if (vacio + ganar >= CONECTA) {
                             valor =  ganar;
@@ -625,7 +625,7 @@ public class MiniMaxRestrainedPlayer extends Player {
                             valor = ganar;
                         }
                         if (jugadorHaGanado(ganar)) {
-                            return 4;
+                            return ganar;
                         }
                     } else if(deQueJugadorEs(tablero, i, j + k, false) == 1) {
                         return 0;
@@ -656,7 +656,7 @@ public class MiniMaxRestrainedPlayer extends Player {
                             valor =  ganar;
                         }
                         if (jugadorHaGanado(ganar)) {
-                            return 4;
+                            return ganar;
                         }
                     } else if (deQueJugadorEs(tablero, i, j + k, true) == -1){
                         return 0;
@@ -683,7 +683,7 @@ public class MiniMaxRestrainedPlayer extends Player {
                             valor =  ganar;
                         }
                         if (jugadorHaGanado(ganar)) {
-                            return 4;
+                            return ganar;
                         }
                     } else if (deQueJugadorEs(tablero, i, j + k, true) == 1) {
                             return 0;
@@ -734,7 +734,7 @@ public class MiniMaxRestrainedPlayer extends Player {
                             valor =  ganar;
                         }
                         if (jugadorHaGanado(ganar)) {
-                            return 4;
+                            return ganar;
                         }
                     } else if (deQueJugadorEs(tablero, i, j, false) == -1) {
                             return 0;
@@ -760,7 +760,7 @@ public class MiniMaxRestrainedPlayer extends Player {
                             valor =  ganar;
                         }
                         if (jugadorHaGanado(ganar)) {
-                            return 4;
+                            return ganar;
                         }
                     }  if (deQueJugadorEs(tablero, i, j, false) == 1) {
                             return 0;

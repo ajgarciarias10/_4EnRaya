@@ -680,7 +680,7 @@ public class AlfaBetaPlayer extends Player {
                     if (deQueJugadorEs(tablero, i, columna, false) == 1) {
                         ganar++;
                         if (jugadorHaGanado(ganar)) {
-                            return 4;
+                            return ganar;
                         }
                         if (vacio + ganar >= CONECTA) {
                             valor =  ganar;
@@ -711,7 +711,7 @@ public class AlfaBetaPlayer extends Player {
                             valor = ganar;
                         }
                         if (jugadorHaGanado(ganar)) {
-                            return 4;
+                            return ganar;
                         }
                     } else if(deQueJugadorEs(tablero, i, j + k, false) == 1) {
                         return 0;
@@ -742,7 +742,7 @@ public class AlfaBetaPlayer extends Player {
                             valor =  ganar;
                         }
                         if (jugadorHaGanado(ganar)) {
-                            return 4;
+                            return ganar;
                         }
                     } else if (deQueJugadorEs(tablero, i, j + k, true) == -1){
                         return 0;
@@ -769,7 +769,7 @@ public class AlfaBetaPlayer extends Player {
                             valor =  ganar;
                         }
                         if (jugadorHaGanado(ganar)) {
-                            return 4;
+                            return ganar;
                         }
                     } else if (deQueJugadorEs(tablero, i, j + k, true) == 1) {
                         return 0;
@@ -790,10 +790,7 @@ public class AlfaBetaPlayer extends Player {
         else if (modo.equals("OD")) {
             return oblicuo(vacio,tablero,i ,j,ganar,jugador,true);
         }
-        //Modo Oblicuo Izquierda  Derecha
-        else if (modo.equals("OI")) {
-            return oblicuo(vacio,tablero,i ,j,ganar,jugador,false);
-        }
+
 
         //endregion
         //endregion
@@ -823,7 +820,7 @@ public class AlfaBetaPlayer extends Player {
                             valor =  ganar;
                         }
                         if (jugadorHaGanado(ganar)) {
-                            return 4;
+                            return ganar;
                         }
                     } else if (deQueJugadorEs(tablero, i, j, false) == -1) {
                         return 0;
@@ -849,7 +846,7 @@ public class AlfaBetaPlayer extends Player {
                             valor =  ganar;
                         }
                         if (jugadorHaGanado(ganar)) {
-                            return 4;
+                            return ganar;
                         }
                     }  if (deQueJugadorEs(tablero, i, j, false) == 1) {
                         return 0;
@@ -868,9 +865,9 @@ public class AlfaBetaPlayer extends Player {
             }
 
         }
-
         return  0;
     }
+
 
     /**
      * Funcion que devuleve una String con el tablero en horizontal
